@@ -1,0 +1,12 @@
+# Virtuelle Python-Umgebung
+backend/.venv/
+
+# Gespeicherte Logins und Sitzungscookies
+backend/secrets/
+
+# Python-Zwischendateien
+backend/__pycache__/
+*.pyc
+
+# Lokale Zugangsdaten
+backend/.env
