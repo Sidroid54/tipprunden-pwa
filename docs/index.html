@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Tasmania Hackentrick</title>
+
+  <link rel="manifest" href="manifest.json">
+
+  <style>
+    :root {
+      --background: #f3f5f7;
+      --surface: #ffffff;
+      --text: #17202a;
+      --muted: #68737d;
+      --border: #dde2e7;
+      --primary: #136f45;
+      --primary-dark: #0d5132;
+      --gold: #d59b22;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--background);
+      color: var(--text);
+      font-family:
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+    }
+
+    header {
+      padding: 24px 16px 28px;
+      background:
+        linear-gradient(
+          135deg,
+          var(--primary-dark),
+          var(--primary)
+        );
+      color: white;
+    }
+
+    .header-content,
+    main {
+      width: min(100%, 900px);
+      margin: 0 auto;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: clamp(1.7rem, 7vw, 2.7rem);
+    }
+
+    header p {
+      margin: 8px 0 0;
+      opacity: 0.85;
+    }
+
+    main {
+      padding: 18px 12px 40px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 4px 18px rgb(0 0 0 / 6%);
+    }
+
+    .summary-card {
+      padding: 16px;
+    }
+
+    .summary-label {
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .summary-value {
+      margin-top: 6px;
+      font-size: 1.45rem;
+      font-weight: 750;
+    }
+
+    .ranking-card {
+      overflow: hidden;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 18px 16px 12px;
+    }
+
+    .section-heading h2 {
+      margin: 0;
+      font-size: 1.25rem;
+    }
+
+    .section-heading span {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      min-width: 570px;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 13px 12px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    th:nth-child(2),
+    td:nth-child(2) {
+      text-align: left;
+    }
+
+    tbody tr:first-child {
+      background: #fff8e5;
+    }
+
+    .rank {
+      font-weight: 750;
+    }
+
+    .rank-1 {
+      color: var(--gold);
+    }
+
+    .player {
+      font-weight: 700;
+    }
+
+    .raw {
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .total {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+
+    .status {
+      padding: 20px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .error {
+      color: #a32121;
+    }
+
+    footer {
+      padding: 24px 12px;
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-align: center;
+    }
+
+    @media (min-width: 650px) {
+      .summary-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      main {
+        padding-top: 24px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="header-content">
+      <h1>Tasmania Hackentrick</h1>
+      <p>Tippspiel und Managerspiel in einer Wertung</p>
+    </div>
+  </header>
+
+  <main>
+    <div id="summary" class="summary-grid"></div>
+
+    <section class="card ranking-card">
+      <div class="section-heading">
+        <h2>Spieltagswertung</h2>
+        <span id="matchday-label"></span>
+      </div>
+
+      <div id="loading" class="status">
+        Ergebnisse werden geladen …
+      </div>
+
+      <div
+        id="table-wrapper"
+        class="table-wrapper"
+        hidden
+      >
+        <table>
+          <thead>
+            <tr>
+              <th>Rang</th>
+              <th>Spieler</th>
+              <th>TS</th>
+              <th>MS</th>
+              <th>Gesamt</th>
+              <th>Rohpunkte</th>
+            </tr>
+          </thead>
+
+          <tbody id="ranking-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Tasmania Hackentrick · Automatisch ausgewertet
+  </footer>
+
+  <script>
+    function createSummaryCard(label, value) {
+      return `
+        <article class="card summary-card">
+          <div class="summary-label">${label}</div>
+          <div class="summary-value">${value}</div>
+        </article>
+      `;
+    }
+
+    function getLatestMatchday(matchdays) {
+      return [...matchdays].sort(
+        (a, b) => Number(b.matchday) - Number(a.matchday)
+      )[0];
+    }
+
+    function formatDate(value) {
+      if (!value) {
+        return "–";
+      }
+
+      return new Intl.DateTimeFormat("de-DE", {
+        dateStyle: "short",
+        timeStyle: "short"
+      }).format(new Date(value));
+    }
+
+    async function loadData() {
+      const loading = document.getElementById("loading");
+      const tableWrapper =
+        document.getElementById("table-wrapper");
+
+      try {
+        const response = await fetch(
+          `data.json?timestamp=${Date.now()}`,
+          { cache: "no-store" }
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            `data.json konnte nicht geladen werden: ` +
+            `${response.status}`
+          );
+        }
+
+        const data = await response.json();
+
+        if (
+          !Array.isArray(data.matchdays) ||
+          data.matchdays.length === 0
+        ) {
+          throw new Error(
+            "Es sind noch keine Spieltage gespeichert."
+          );
+        }
+
+        const matchday = getLatestMatchday(data.matchdays);
+        const results = matchday.results;
+
+        if (!Array.isArray(results) || results.length !== 9) {
+          throw new Error(
+            "Die Spieltagsdaten sind nicht vollständig."
+          );
+        }
+
+        renderSummary(data, matchday);
+        renderRanking(results);
+
+        document.getElementById(
+          "matchday-label"
+        ).textContent = `Spieltag ${matchday.matchday}`;
+
+        loading.hidden = true;
+        tableWrapper.hidden = false;
+      } catch (error) {
+        console.error(error);
+
+        loading.classList.add("error");
+        loading.textContent =
+          `Fehler beim Laden: ${error.message}`;
+      }
+    }
+
+    function renderSummary(data, matchday) {
+      const leader = matchday.results[0];
+
+      const bestTs = [...matchday.results].sort(
+        (a, b) => b.ts.points - a.ts.points
+      )[0];
+
+      const bestMs = [...matchday.results].sort(
+        (a, b) => b.ms.points - a.ms.points
+      )[0];
+
+      const summary = document.getElementById("summary");
+
+      summary.innerHTML = [
+        createSummaryCard(
+          "Spieltag",
+          matchday.matchday
+        ),
+        createSummaryCard(
+          "Tagessieger",
+          leader.name
+        ),
+        createSummaryCard(
+          "Bestes TS",
+          bestTs.name
+        ),
+        createSummaryCard(
+          "Bestes MS",
+          bestMs.name
+        )
+      ].join("");
+    }
+
+    function renderRanking(results) {
+      const tbody = document.getElementById("ranking-body");
+
+      tbody.innerHTML = results.map(result => {
+        const rankClass =
+          result.matchday_rank === 1
+            ? "rank rank-1"
+            : "rank";
+
+        return `
+          <tr>
+            <td class="${rankClass}">
+              ${result.matchday_rank}
+            </td>
+
+            <td class="player">
+              ${result.name}
+            </td>
+
+            <td>
+              <strong>${result.ts.points}</strong>
+            </td>
+
+            <td>
+              <strong>${result.ms.points}</strong>
+            </td>
+
+            <td class="total">
+              ${result.matchday_points}
+            </td>
+
+            <td class="raw">
+              TS ${result.ts.raw_points}
+              ·
+              MS ${result.ms.raw_points}
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("service-worker.js");
+    }
+
+    loadData();
+  </script>
+</body>
+</html>
