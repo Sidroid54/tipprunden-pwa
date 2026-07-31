@@ -1,0 +1,151 @@
+{
+  "matchday": 7,
+  "generated_at": "2026-07-31T20:21:49.980706+02:00",
+  "results": [
+    {
+      "name": "Kai",
+      "ts": {
+        "rank": 1,
+        "raw_points": 13,
+        "points": 10
+      },
+      "ms": {
+        "rank": 1,
+        "raw_points": 58,
+        "points": 10
+      },
+      "matchday_points": 20,
+      "matchday_rank": 1
+    },
+    {
+      "name": "Tim",
+      "ts": {
+        "rank": 1,
+        "raw_points": 13,
+        "points": 10
+      },
+      "ms": {
+        "rank": 2,
+        "raw_points": 52,
+        "points": 8
+      },
+      "matchday_points": 18,
+      "matchday_rank": 2
+    },
+    {
+      "name": "Marius",
+      "ts": {
+        "rank": 1,
+        "raw_points": 13,
+        "points": 10
+      },
+      "ms": {
+        "rank": 4,
+        "raw_points": 48,
+        "points": 6
+      },
+      "matchday_points": 16,
+      "matchday_rank": 3
+    },
+    {
+      "name": "Marcus",
+      "ts": {
+        "rank": 5,
+        "raw_points": 12,
+        "points": 5
+      },
+      "ms": {
+        "rank": 3,
+        "raw_points": 50,
+        "points": 7
+      },
+      "matchday_points": 12,
+      "matchday_rank": 4
+    },
+    {
+      "name": "Simon",
+      "ts": {
+        "rank": 1,
+        "raw_points": 13,
+        "points": 10
+      },
+      "ms": {
+        "rank": 8,
+        "raw_points": 39,
+        "points": 2
+      },
+      "matchday_points": 12,
+      "matchday_rank": 4
+    },
+    {
+      "name": "Jan",
+      "ts": {
+        "rank": 5,
+        "raw_points": 12,
+        "points": 5
+      },
+      "ms": {
+        "rank": 5,
+        "raw_points": 42,
+        "points": 5
+      },
+      "matchday_points": 10,
+      "matchday_rank": 6
+    },
+    {
+      "name": "Björn",
+      "ts": {
+        "rank": 5,
+        "raw_points": 12,
+        "points": 5
+      },
+      "ms": {
+        "rank": 6,
+        "raw_points": 41,
+        "points": 4
+      },
+      "matchday_points": 9,
+      "matchday_rank": 7
+    },
+    {
+      "name": "Alex",
+      "ts": {
+        "rank": 9,
+        "raw_points": 8,
+        "points": 1
+      },
+      "ms": {
+        "rank": 6,
+        "raw_points": 41,
+        "points": 4
+      },
+      "matchday_points": 5,
+      "matchday_rank": 8
+    },
+    {
+      "name": "Daniel",
+      "ts": {
+        "rank": 8,
+        "raw_points": 11,
+        "points": 2
+      },
+      "ms": {
+        "rank": 9,
+        "raw_points": 38,
+        "points": 1
+      },
+      "matchday_points": 3,
+      "matchday_rank": 9
+    }
+  ],
+  "sources": {
+    "kicktipp": {
+      "retrieved_at": "2026-07-31T20:21:49.963728+02:00",
+      "source_url": "https://www.kicktipp.de/tasmania-hackentrick/tippuebersicht?tippsaisonId=3923606&spieltagIndex=7"
+    },
+    "kicker": {
+      "retrieved_at": "2026-07-31T20:21:49.575503+02:00",
+      "source_url": "https://www.kicker.de/managerspiel/interactive/se-k00012025/group/round/rn-k000120250007/010000000000000000000711"
+    }
+  }
+}

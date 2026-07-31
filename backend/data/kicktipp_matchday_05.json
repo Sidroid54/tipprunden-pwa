@@ -2,35 +2,35 @@
   "source": "kicktipp",
   "competition": "tippspiel",
   "tippsaison_id": "3923606",
-  "matchday": 33,
-  "source_url": "https://www.kicktipp.de/tasmania-hackentrick/tippuebersicht?tippsaisonId=3923606&spieltagIndex=33",
-  "retrieved_at": "2026-07-31T20:23:26.417094+02:00",
+  "matchday": 5,
+  "source_url": "https://www.kicktipp.de/tasmania-hackentrick/tippuebersicht?tippsaisonId=3923606&spieltagIndex=5",
+  "retrieved_at": "2026-07-31T20:21:42.545525+02:00",
   "results": [
     {
       "rank": 1,
-      "name": "Björn",
-      "kicktipp_name": "Björn",
+      "name": "Jan",
+      "kicktipp_name": "AllezEffzeh",
       "raw_points": 16,
       "ts_points": 10
     },
     {
       "rank": 2,
-      "name": "Jan",
-      "kicktipp_name": "AllezEffzeh",
+      "name": "Alex",
+      "kicktipp_name": "Alex",
       "raw_points": 15,
       "ts_points": 8
     },
     {
-      "rank": 3,
-      "name": "Kai",
-      "kicktipp_name": "KAIANO",
-      "raw_points": 14,
-      "ts_points": 7
+      "rank": 2,
+      "name": "Tim",
+      "kicktipp_name": "Tim",
+      "raw_points": 15,
+      "ts_points": 8
     },
     {
       "rank": 4,
-      "name": "Tim",
-      "kicktipp_name": "Tim",
+      "name": "Simon",
+      "kicktipp_name": "Simon",
       "raw_points": 13,
       "ts_points": 6
     },
@@ -43,10 +43,17 @@
     },
     {
       "rank": 5,
-      "name": "Marcus",
-      "kicktipp_name": "Marcus",
+      "name": "Kai",
+      "kicktipp_name": "KAIANO",
       "raw_points": 12,
       "ts_points": 5
+    },
+    {
+      "rank": 7,
+      "name": "Marcus",
+      "kicktipp_name": "Marcus",
+      "raw_points": 10,
+      "ts_points": 3
     },
     {
       "rank": 7,
@@ -56,17 +63,10 @@
       "ts_points": 3
     },
     {
-      "rank": 7,
-      "name": "Alex",
-      "kicktipp_name": "Alex",
-      "raw_points": 10,
-      "ts_points": 3
-    },
-    {
       "rank": 9,
-      "name": "Simon",
-      "kicktipp_name": "Simon",
-      "raw_points": 8,
+      "name": "Björn",
+      "kicktipp_name": "Björn",
+      "raw_points": 9,
       "ts_points": 1
     }
   ]

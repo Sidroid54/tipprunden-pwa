@@ -2,71 +2,71 @@
   "source": "kicker",
   "competition": "managerspiel_interactive",
   "season_id": "se-k00012025",
-  "matchday": 33,
-  "source_url": "https://www.kicker.de/managerspiel/interactive/se-k00012025/group/round/rn-k000120250033/010000000000000000000711",
-  "retrieved_at": "2026-07-31T20:23:26.018282+02:00",
+  "matchday": 28,
+  "source_url": "https://www.kicker.de/managerspiel/interactive/se-k00012025/group/round/rn-k000120250028/010000000000000000000711",
+  "retrieved_at": "2026-07-31T20:23:07.345136+02:00",
   "results": [
     {
       "rank": 1,
-      "name": "Marcus",
-      "kicker_name": "Marcus Vanselow",
-      "raw_points": 78,
+      "name": "Tim",
+      "kicker_name": "Tim Roth",
+      "raw_points": 80,
       "ms_points": 10
     },
     {
       "rank": 2,
       "name": "Marius",
       "kicker_name": "Luitpold",
-      "raw_points": 59,
+      "raw_points": 73,
       "ms_points": 8
     },
     {
       "rank": 3,
-      "name": "Tim",
-      "kicker_name": "Tim Roth",
-      "raw_points": 58,
+      "name": "Daniel",
+      "kicker_name": "Daniel Sinzig",
+      "raw_points": 71,
       "ms_points": 7
     },
     {
       "rank": 4,
-      "name": "Daniel",
-      "kicker_name": "Daniel Sinzig",
-      "raw_points": 57,
+      "name": "Alex",
+      "kicker_name": "Alexander Neubauer",
+      "raw_points": 60,
       "ms_points": 6
     },
     {
       "rank": 5,
       "name": "Kai",
       "kicker_name": "KAIANO",
-      "raw_points": 54,
+      "raw_points": 58,
       "ms_points": 5
     },
     {
       "rank": 6,
-      "name": "Alex",
-      "kicker_name": "Alexander Neubauer",
-      "raw_points": 53,
+      "name": "Simon",
+      "kicker_name": "Simon Owald",
+      "raw_points": 49,
       "ms_points": 4
     },
     {
       "rank": 7,
-      "name": "Simon",
-      "kicker_name": "Simon Owald",
-      "raw_points": 52,
+      "name": "Marcus",
+      "kicker_name": "Marcus Vanselow",
+      "raw_points": 43,
       "ms_points": 3
     },
     {
       "rank": 8,
       "name": "Jan",
       "kicker_name": "Jan Horstmann",
-      "raw_points": 47,
+      "raw_points": 34,
       "ms_points": 2
     },
     {
       "rank": 9,
       "name": "Björn",
       "kicker_name": "björn wagner",
-      "raw_points": 45,
+      "raw_points": 9,
       "ms_points": 1
     }
   ]

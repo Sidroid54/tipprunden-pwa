@@ -1,0 +1,209 @@
+{
+  "generated_at": "2026-07-31T20:23:30.093411+02:00",
+  "entries": [
+    {
+      "matchday": 1,
+      "status": "success",
+      "started_at": "2026-07-31T20:21:23.135936+02:00",
+      "finished_at": "2026-07-31T20:21:26.479826+02:00"
+    },
+    {
+      "matchday": 2,
+      "status": "success",
+      "started_at": "2026-07-31T20:21:28.481953+02:00",
+      "finished_at": "2026-07-31T20:21:30.276331+02:00"
+    },
+    {
+      "matchday": 3,
+      "status": "success",
+      "started_at": "2026-07-31T20:21:32.277672+02:00",
+      "finished_at": "2026-07-31T20:21:33.905068+02:00"
+    },
+    {
+      "matchday": 4,
+      "status": "success",
+      "started_at": "2026-07-31T20:21:35.906035+02:00",
+      "finished_at": "2026-07-31T20:21:37.942682+02:00"
+    },
+    {
+      "matchday": 5,
+      "status": "success",
+      "started_at": "2026-07-31T20:21:39.944331+02:00",
+      "finished_at": "2026-07-31T20:21:42.566055+02:00"
+    },
+    {
+      "matchday": 6,
+      "status": "success",
+      "started_at": "2026-07-31T20:21:44.567138+02:00",
+      "finished_at": "2026-07-31T20:21:46.260027+02:00"
+    },
+    {
+      "matchday": 7,
+      "status": "success",
+      "started_at": "2026-07-31T20:21:48.261933+02:00",
+      "finished_at": "2026-07-31T20:21:49.983095+02:00"
+    },
+    {
+      "matchday": 8,
+      "status": "success",
+      "started_at": "2026-07-31T20:21:51.984888+02:00",
+      "finished_at": "2026-07-31T20:21:53.629471+02:00"
+    },
+    {
+      "matchday": 9,
+      "status": "success",
+      "started_at": "2026-07-31T20:21:55.630716+02:00",
+      "finished_at": "2026-07-31T20:21:57.265496+02:00"
+    },
+    {
+      "matchday": 10,
+      "status": "success",
+      "started_at": "2026-07-31T20:21:59.266886+02:00",
+      "finished_at": "2026-07-31T20:22:00.967016+02:00"
+    },
+    {
+      "matchday": 11,
+      "status": "success",
+      "started_at": "2026-07-31T20:22:02.968191+02:00",
+      "finished_at": "2026-07-31T20:22:04.558010+02:00"
+    },
+    {
+      "matchday": 12,
+      "status": "success",
+      "started_at": "2026-07-31T20:22:06.559970+02:00",
+      "finished_at": "2026-07-31T20:22:08.172008+02:00"
+    },
+    {
+      "matchday": 13,
+      "status": "success",
+      "started_at": "2026-07-31T20:22:10.174082+02:00",
+      "finished_at": "2026-07-31T20:22:11.981823+02:00"
+    },
+    {
+      "matchday": 14,
+      "status": "success",
+      "started_at": "2026-07-31T20:22:13.983822+02:00",
+      "finished_at": "2026-07-31T20:22:15.781682+02:00"
+    },
+    {
+      "matchday": 15,
+      "status": "success",
+      "started_at": "2026-07-31T20:22:17.784095+02:00",
+      "finished_at": "2026-07-31T20:22:19.574235+02:00"
+    },
+    {
+      "matchday": 16,
+      "status": "success",
+      "started_at": "2026-07-31T20:22:21.575977+02:00",
+      "finished_at": "2026-07-31T20:22:23.243120+02:00"
+    },
+    {
+      "matchday": 17,
+      "status": "success",
+      "started_at": "2026-07-31T20:22:25.244539+02:00",
+      "finished_at": "2026-07-31T20:22:26.955647+02:00"
+    },
+    {
+      "matchday": 18,
+      "status": "success",
+      "started_at": "2026-07-31T20:22:28.956965+02:00",
+      "finished_at": "2026-07-31T20:22:30.648383+02:00"
+    },
+    {
+      "matchday": 19,
+      "status": "success",
+      "started_at": "2026-07-31T20:22:32.650052+02:00",
+      "finished_at": "2026-07-31T20:22:34.260694+02:00"
+    },
+    {
+      "matchday": 20,
+      "status": "success",
+      "started_at": "2026-07-31T20:22:36.262982+02:00",
+      "finished_at": "2026-07-31T20:22:37.922449+02:00"
+    },
+    {
+      "matchday": 21,
+      "status": "success",
+      "started_at": "2026-07-31T20:22:39.923623+02:00",
+      "finished_at": "2026-07-31T20:22:41.690925+02:00"
+    },
+    {
+      "matchday": 22,
+      "status": "success",
+      "started_at": "2026-07-31T20:22:43.692810+02:00",
+      "finished_at": "2026-07-31T20:22:45.301836+02:00"
+    },
+    {
+      "matchday": 23,
+      "status": "success",
+      "started_at": "2026-07-31T20:22:47.303517+02:00",
+      "finished_at": "2026-07-31T20:22:49.024268+02:00"
+    },
+    {
+      "matchday": 24,
+      "status": "success",
+      "started_at": "2026-07-31T20:22:51.026220+02:00",
+      "finished_at": "2026-07-31T20:22:52.672421+02:00"
+    },
+    {
+      "matchday": 25,
+      "status": "success",
+      "started_at": "2026-07-31T20:22:54.673809+02:00",
+      "finished_at": "2026-07-31T20:22:56.398910+02:00"
+    },
+    {
+      "matchday": 26,
+      "status": "success",
+      "started_at": "2026-07-31T20:22:58.400445+02:00",
+      "finished_at": "2026-07-31T20:23:00.408178+02:00"
+    },
+    {
+      "matchday": 27,
+      "status": "success",
+      "started_at": "2026-07-31T20:23:02.409279+02:00",
+      "finished_at": "2026-07-31T20:23:04.047267+02:00"
+    },
+    {
+      "matchday": 28,
+      "status": "success",
+      "started_at": "2026-07-31T20:23:06.048950+02:00",
+      "finished_at": "2026-07-31T20:23:07.801564+02:00"
+    },
+    {
+      "matchday": 29,
+      "status": "success",
+      "started_at": "2026-07-31T20:23:09.802758+02:00",
+      "finished_at": "2026-07-31T20:23:11.639910+02:00"
+    },
+    {
+      "matchday": 30,
+      "status": "success",
+      "started_at": "2026-07-31T20:23:13.641532+02:00",
+      "finished_at": "2026-07-31T20:23:15.474080+02:00"
+    },
+    {
+      "matchday": 31,
+      "status": "success",
+      "started_at": "2026-07-31T20:23:17.475502+02:00",
+      "finished_at": "2026-07-31T20:23:19.122650+02:00"
+    },
+    {
+      "matchday": 32,
+      "status": "success",
+      "started_at": "2026-07-31T20:23:21.124695+02:00",
+      "finished_at": "2026-07-31T20:23:22.831646+02:00"
+    },
+    {
+      "matchday": 33,
+      "status": "success",
+      "started_at": "2026-07-31T20:23:24.833086+02:00",
+      "finished_at": "2026-07-31T20:23:26.437628+02:00"
+    },
+    {
+      "matchday": 34,
+      "status": "success",
+      "started_at": "2026-07-31T20:23:28.439999+02:00",
+      "finished_at": "2026-07-31T20:23:30.093152+02:00"
+    }
+  ]
+}

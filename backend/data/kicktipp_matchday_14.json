@@ -1,0 +1,73 @@
+{
+  "source": "kicktipp",
+  "competition": "tippspiel",
+  "tippsaison_id": "3923606",
+  "matchday": 14,
+  "source_url": "https://www.kicktipp.de/tasmania-hackentrick/tippuebersicht?tippsaisonId=3923606&spieltagIndex=14",
+  "retrieved_at": "2026-07-31T20:22:15.752456+02:00",
+  "results": [
+    {
+      "rank": 1,
+      "name": "Tim",
+      "kicktipp_name": "Tim",
+      "raw_points": 14,
+      "ts_points": 10
+    },
+    {
+      "rank": 1,
+      "name": "Daniel",
+      "kicktipp_name": "Daniel",
+      "raw_points": 14,
+      "ts_points": 10
+    },
+    {
+      "rank": 1,
+      "name": "Simon",
+      "kicktipp_name": "Simon",
+      "raw_points": 14,
+      "ts_points": 10
+    },
+    {
+      "rank": 4,
+      "name": "Alex",
+      "kicktipp_name": "Alex",
+      "raw_points": 12,
+      "ts_points": 6
+    },
+    {
+      "rank": 5,
+      "name": "Marcus",
+      "kicktipp_name": "Marcus",
+      "raw_points": 11,
+      "ts_points": 5
+    },
+    {
+      "rank": 5,
+      "name": "Björn",
+      "kicktipp_name": "Björn",
+      "raw_points": 11,
+      "ts_points": 5
+    },
+    {
+      "rank": 7,
+      "name": "Marius",
+      "kicktipp_name": "Luitpold",
+      "raw_points": 10,
+      "ts_points": 3
+    },
+    {
+      "rank": 8,
+      "name": "Kai",
+      "kicktipp_name": "KAIANO",
+      "raw_points": 8,
+      "ts_points": 2
+    },
+    {
+      "rank": 9,
+      "name": "Jan",
+      "kicktipp_name": "AllezEffzeh",
+      "raw_points": 6,
+      "ts_points": 1
+    }
+  ]
+}
