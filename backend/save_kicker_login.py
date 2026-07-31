@@ -1,3 +1,5 @@
+print("RICHTIGE DATEI AUS C:\\Users\\Simon\\GitHub\\tipprunden-pwa")
+
 from pathlib import Path
 
 from playwright.sync_api import sync_playwright
@@ -18,7 +20,10 @@ def main() -> None:
     AUTH_FILE.parent.mkdir(parents=True, exist_ok=True)
 
     with sync_playwright() as playwright:
-        browser = playwright.chromium.launch(headless=False)
+        browser = playwright.chromium.launch(
+            channel="msedge",
+            headless=False,
+        )
         context = browser.new_context()
         page = context.new_page()
 
