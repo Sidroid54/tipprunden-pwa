@@ -152,9 +152,27 @@
       font-size: 1.25rem;
     }
 
-    .section-heading span {
+    .ranking-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ranking-controls span {
       color: var(--muted);
       font-size: 0.9rem;
+    }
+
+    .matchday-select {
+      min-height: 38px;
+      padding: 6px 34px 6px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface);
+      color: var(--text);
+      font: inherit;
+      font-weight: 650;
+      cursor: pointer;
     }
 
     .table-wrapper {
@@ -235,6 +253,21 @@
       text-align: center;
     }
 
+    @media (max-width: 520px) {
+      .section-heading {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .ranking-controls {
+        width: 100%;
+      }
+
+      .matchday-select {
+        width: 100%;
+      }
+    }
+
     @media (min-width: 650px) {
       .summary-grid {
         grid-template-columns: repeat(4, 1fr);
@@ -279,7 +312,17 @@
     <section class="card ranking-card">
       <div class="section-heading">
         <h2 id="ranking-title">Saisonwertung</h2>
-        <span id="ranking-label"></span>
+
+        <div class="ranking-controls">
+          <span id="ranking-label"></span>
+
+          <select
+            id="matchday-select"
+            class="matchday-select"
+            aria-label="Spieltag auswählen"
+            hidden
+          ></select>
+        </div>
       </div>
 
       <div id="loading" class="status">
@@ -306,10 +349,17 @@
   <script>
     let appData = null;
     let latestMatchday = null;
+    let selectedMatchday = null;
     let activeView = "season";
 
-    const seasonTab = document.getElementById("season-tab");
-    const matchdayTab = document.getElementById("matchday-tab");
+    const seasonTab =
+      document.getElementById("season-tab");
+
+    const matchdayTab =
+      document.getElementById("matchday-tab");
+
+    const matchdaySelect =
+      document.getElementById("matchday-select");
 
     seasonTab.addEventListener("click", () => {
       setView("season");
@@ -317,6 +367,11 @@
 
     matchdayTab.addEventListener("click", () => {
       setView("matchday");
+    });
+
+    matchdaySelect.addEventListener("change", event => {
+      selectedMatchday = Number(event.target.value);
+      renderMatchdayView();
     });
 
     function setView(view) {
@@ -346,7 +401,8 @@
 
     function getLatestMatchday(matchdays) {
       return [...matchdays].sort(
-        (a, b) => Number(b.matchday) - Number(a.matchday)
+        (a, b) =>
+          Number(b.matchday) - Number(a.matchday)
       )[0];
     }
 
@@ -456,6 +512,25 @@
       );
     }
 
+    function populateMatchdaySelect() {
+      const sortedMatchdays =
+        [...appData.matchdays].sort(
+          (a, b) =>
+            Number(b.matchday) - Number(a.matchday)
+        );
+
+      matchdaySelect.innerHTML = sortedMatchdays
+        .map(matchday => `
+          <option value="${matchday.matchday}">
+            Spieltag ${matchday.matchday}
+          </option>
+        `)
+        .join("");
+
+      matchdaySelect.value =
+        String(selectedMatchday);
+    }
+
     function renderActiveView() {
       if (!appData || !latestMatchday) {
         return;
@@ -469,7 +544,15 @@
     }
 
     function renderSeasonView() {
+      matchdaySelect.hidden = true;
+
+      const rankingLabel =
+        document.getElementById("ranking-label");
+
+      rankingLabel.hidden = false;
+
       const ranking = calculateSeasonRanking(appData);
+
       const leaderNames = namesWithMaximum(
         ranking,
         result => result.totalPoints
@@ -508,13 +591,13 @@
         "ranking-title"
       ).textContent = "Saisonwertung";
 
-      document.getElementById(
-        "ranking-label"
-      ).textContent =
+      rankingLabel.textContent =
         `${appData.matchdays.length} Spieltag` +
         `${appData.matchdays.length === 1 ? "" : "e"}`;
 
-      document.getElementById("ranking-head").innerHTML = `
+      document.getElementById(
+        "ranking-head"
+      ).innerHTML = `
         <tr>
           <th>Rang</th>
           <th>Spieler</th>
@@ -525,38 +608,49 @@
         </tr>
       `;
 
-      document.getElementById("ranking-body").innerHTML =
-        ranking.map(result => {
-          const rankClass =
-            result.rank === 1
-              ? "rank rank-1"
-              : "rank";
+      document.getElementById(
+        "ranking-body"
+      ).innerHTML = ranking.map(result => {
+        const rankClass =
+          result.rank === 1
+            ? "rank rank-1"
+            : "rank";
 
-          return `
-            <tr>
-              <td class="${rankClass}">
-                ${result.rank}
-              </td>
+        return `
+          <tr>
+            <td class="${rankClass}">
+              ${result.rank}
+            </td>
 
-              <td class="player">
-                ${result.name}
-              </td>
+            <td class="player">
+              ${result.name}
+            </td>
 
-              <td>${result.tsPoints}</td>
-              <td>${result.msPoints}</td>
+            <td>${result.tsPoints}</td>
+            <td>${result.msPoints}</td>
 
-              <td class="total">
-                ${result.totalPoints}
-              </td>
+            <td class="total">
+              ${result.totalPoints}
+            </td>
 
-              <td>${result.matchdayWins}</td>
-            </tr>
-          `;
-        }).join("");
+            <td>${result.matchdayWins}</td>
+          </tr>
+        `;
+      }).join("");
     }
 
     function renderMatchdayView() {
-      const results = latestMatchday.results;
+      const matchday = appData.matchdays.find(
+        item =>
+          Number(item.matchday) ===
+          Number(selectedMatchday)
+      );
+
+      if (!matchday) {
+        return;
+      }
+
+      const results = matchday.results;
 
       const winnerNames = namesWithMaximum(
         results,
@@ -576,7 +670,7 @@
       document.getElementById("summary").innerHTML = [
         createSummaryCard(
           "Spieltag",
-          latestMatchday.matchday
+          matchday.matchday
         ),
         createSummaryCard(
           "Tagessieger",
@@ -598,10 +692,15 @@
 
       document.getElementById(
         "ranking-label"
-      ).textContent =
-        `Spieltag ${latestMatchday.matchday}`;
+      ).hidden = true;
 
-      document.getElementById("ranking-head").innerHTML = `
+      matchdaySelect.hidden = false;
+      matchdaySelect.value =
+        String(matchday.matchday);
+
+      document.getElementById(
+        "ranking-head"
+      ).innerHTML = `
         <tr>
           <th>Rang</th>
           <th>Spieler</th>
@@ -612,47 +711,50 @@
         </tr>
       `;
 
-      document.getElementById("ranking-body").innerHTML =
-        results.map(result => {
-          const rankClass =
-            result.matchday_rank === 1
-              ? "rank rank-1"
-              : "rank";
+      document.getElementById(
+        "ranking-body"
+      ).innerHTML = results.map(result => {
+        const rankClass =
+          Number(result.matchday_rank) === 1
+            ? "rank rank-1"
+            : "rank";
 
-          return `
-            <tr>
-              <td class="${rankClass}">
-                ${result.matchday_rank}
-              </td>
+        return `
+          <tr>
+            <td class="${rankClass}">
+              ${result.matchday_rank}
+            </td>
 
-              <td class="player">
-                ${result.name}
-              </td>
+            <td class="player">
+              ${result.name}
+            </td>
 
-              <td>
-                <strong>${result.ts.points}</strong>
-              </td>
+            <td>
+              <strong>${result.ts.points}</strong>
+            </td>
 
-              <td>
-                <strong>${result.ms.points}</strong>
-              </td>
+            <td>
+              <strong>${result.ms.points}</strong>
+            </td>
 
-              <td class="total">
-                ${result.matchday_points}
-              </td>
+            <td class="total">
+              ${result.matchday_points}
+            </td>
 
-              <td class="raw">
-                TS ${result.ts.raw_points}
-                ·
-                MS ${result.ms.raw_points}
-              </td>
-            </tr>
-          `;
-        }).join("");
+            <td class="raw">
+              TS ${result.ts.raw_points}
+              ·
+              MS ${result.ms.raw_points}
+            </td>
+          </tr>
+        `;
+      }).join("");
     }
 
     async function loadData() {
-      const loading = document.getElementById("loading");
+      const loading =
+        document.getElementById("loading");
+
       const tableWrapper =
         document.getElementById("table-wrapper");
 
@@ -664,8 +766,8 @@
 
         if (!response.ok) {
           throw new Error(
-            `data.json konnte nicht geladen werden: ` +
-            `${response.status}`
+            "data.json konnte nicht geladen werden: " +
+            response.status
           );
         }
 
@@ -677,6 +779,15 @@
         ) {
           throw new Error(
             "Es sind noch keine Spieltage gespeichert."
+          );
+        }
+
+        if (
+          !Array.isArray(appData.participants) ||
+          appData.participants.length !== 9
+        ) {
+          throw new Error(
+            "Die Teilnehmerliste ist nicht vollständig."
           );
         }
 
@@ -693,6 +804,10 @@
           );
         }
 
+        selectedMatchday =
+          Number(latestMatchday.matchday);
+
+        populateMatchdaySelect();
         renderActiveView();
 
         loading.hidden = true;
