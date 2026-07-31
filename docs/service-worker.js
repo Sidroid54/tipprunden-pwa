@@ -1,15 +1,13 @@
-const CACHE_NAME = "tasmania-hackentrick-v2";
+const CACHE_NAME = "tasmania-hackentrick-v3";
 
-const APP_FILES = [
-  "./",
-  "./index.html",
+const STATIC_FILES = [
   "./manifest.json"
 ];
 
 self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(APP_FILES))
+      .then(cache => cache.addAll(STATIC_FILES))
   );
 
   self.skipWaiting();
@@ -30,21 +28,26 @@ self.addEventListener("activate", event => {
 });
 
 self.addEventListener("fetch", event => {
-  const requestUrl = new URL(event.request.url);
+  const request = event.request;
+  const url = new URL(request.url);
 
-  if (requestUrl.pathname.endsWith("/data.json")) {
+  // HTML-Seiten und data.json immer zuerst aus dem Netz laden.
+  if (
+    request.mode === "navigate" ||
+    url.pathname.endsWith("/index.html") ||
+    url.pathname.endsWith("/data.json")
+  ) {
     event.respondWith(
-      fetch(event.request).catch(() =>
-        caches.match(event.request)
-      )
+      fetch(request).catch(() => caches.match(request))
     );
 
     return;
   }
 
+  // Andere Dateien dürfen aus dem Cache kommen.
   event.respondWith(
-    caches.match(event.request).then(cached =>
-      cached || fetch(event.request)
-    )
+    caches.match(request).then(cachedResponse => {
+      return cachedResponse || fetch(request);
+    })
   );
 });
