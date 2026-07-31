@@ -2,10 +2,13 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
+
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0"
   >
+
+  <meta name="theme-color" content="#0d5132">
 
   <title>Tasmania Hackentrick</title>
 
@@ -20,7 +23,9 @@
       --border: #dde2e7;
       --primary: #136f45;
       --primary-dark: #0d5132;
+      --primary-light: #eaf5ef;
       --gold: #d59b22;
+      --danger: #a32121;
     }
 
     * {
@@ -70,6 +75,33 @@
       padding: 18px 12px 40px;
     }
 
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-bottom: 18px;
+      padding: 5px;
+      background: #e3e7ea;
+      border-radius: 14px;
+    }
+
+    .tab-button {
+      min-height: 46px;
+      border: 0;
+      border-radius: 10px;
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .tab-button.active {
+      background: var(--surface);
+      color: var(--primary-dark);
+      box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
+    }
+
     .summary-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -85,19 +117,21 @@
     }
 
     .summary-card {
+      min-width: 0;
       padding: 16px;
     }
 
     .summary-label {
       color: var(--muted);
-      font-size: 0.82rem;
+      font-size: 0.75rem;
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
 
     .summary-value {
       margin-top: 6px;
-      font-size: 1.45rem;
+      overflow-wrap: anywhere;
+      font-size: 1.35rem;
       font-weight: 750;
     }
 
@@ -143,7 +177,7 @@
 
     th {
       color: var(--muted);
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }
@@ -175,9 +209,9 @@
     }
 
     .total {
+      color: var(--primary-dark);
       font-size: 1.05rem;
       font-weight: 800;
-      color: var(--primary-dark);
     }
 
     .status {
@@ -187,7 +221,11 @@
     }
 
     .error {
-      color: #a32121;
+      color: var(--danger);
+    }
+
+    [hidden] {
+      display: none !important;
     }
 
     footer {
@@ -218,12 +256,30 @@
   </header>
 
   <main>
+    <nav class="tabs" aria-label="Wertung auswählen">
+      <button
+        id="season-tab"
+        class="tab-button active"
+        type="button"
+      >
+        Saison
+      </button>
+
+      <button
+        id="matchday-tab"
+        class="tab-button"
+        type="button"
+      >
+        Spieltag
+      </button>
+    </nav>
+
     <div id="summary" class="summary-grid"></div>
 
     <section class="card ranking-card">
       <div class="section-heading">
-        <h2>Spieltagswertung</h2>
-        <span id="matchday-label"></span>
+        <h2 id="ranking-title">Saisonwertung</h2>
+        <span id="ranking-label"></span>
       </div>
 
       <div id="loading" class="status">
@@ -236,28 +292,49 @@
         hidden
       >
         <table>
-          <thead>
-            <tr>
-              <th>Rang</th>
-              <th>Spieler</th>
-              <th>TS</th>
-              <th>MS</th>
-              <th>Gesamt</th>
-              <th>Rohpunkte</th>
-            </tr>
-          </thead>
-
+          <thead id="ranking-head"></thead>
           <tbody id="ranking-body"></tbody>
         </table>
       </div>
     </section>
   </main>
 
-  <footer>
+  <footer id="footer">
     Tasmania Hackentrick · Automatisch ausgewertet
   </footer>
 
   <script>
+    let appData = null;
+    let latestMatchday = null;
+    let activeView = "season";
+
+    const seasonTab = document.getElementById("season-tab");
+    const matchdayTab = document.getElementById("matchday-tab");
+
+    seasonTab.addEventListener("click", () => {
+      setView("season");
+    });
+
+    matchdayTab.addEventListener("click", () => {
+      setView("matchday");
+    });
+
+    function setView(view) {
+      activeView = view;
+
+      seasonTab.classList.toggle(
+        "active",
+        view === "season"
+      );
+
+      matchdayTab.classList.toggle(
+        "active",
+        view === "matchday"
+      );
+
+      renderActiveView();
+    }
+
     function createSummaryCard(label, value) {
       return `
         <article class="card summary-card">
@@ -284,6 +361,296 @@
       }).format(new Date(value));
     }
 
+    function namesWithMaximum(results, getValue) {
+      const maximum = Math.max(
+        ...results.map(getValue)
+      );
+
+      return results
+        .filter(result => getValue(result) === maximum)
+        .map(result => result.name)
+        .join(", ");
+    }
+
+    function assignCompetitionRanks(
+      rows,
+      pointsField
+    ) {
+      const sorted = [...rows].sort((a, b) => {
+        const difference =
+          Number(b[pointsField]) -
+          Number(a[pointsField]);
+
+        if (difference !== 0) {
+          return difference;
+        }
+
+        return a.name.localeCompare(
+          b.name,
+          "de",
+          { sensitivity: "base" }
+        );
+      });
+
+      let previousPoints = null;
+      let currentRank = 0;
+
+      return sorted.map((row, index) => {
+        const points = Number(row[pointsField]);
+
+        if (points !== previousPoints) {
+          currentRank = index + 1;
+        }
+
+        previousPoints = points;
+
+        return {
+          ...row,
+          rank: currentRank
+        };
+      });
+    }
+
+    function calculateSeasonRanking(data) {
+      const totals = new Map();
+
+      for (const name of data.participants) {
+        totals.set(name, {
+          name,
+          tsPoints: 0,
+          msPoints: 0,
+          totalPoints: 0,
+          matchdayWins: 0
+        });
+      }
+
+      for (const matchday of data.matchdays) {
+        for (const result of matchday.results) {
+          const participant = totals.get(result.name);
+
+          if (!participant) {
+            continue;
+          }
+
+          participant.tsPoints += Number(
+            result.ts.points
+          );
+
+          participant.msPoints += Number(
+            result.ms.points
+          );
+
+          participant.totalPoints += Number(
+            result.matchday_points
+          );
+
+          if (Number(result.matchday_rank) === 1) {
+            participant.matchdayWins += 1;
+          }
+        }
+      }
+
+      return assignCompetitionRanks(
+        [...totals.values()],
+        "totalPoints"
+      );
+    }
+
+    function renderActiveView() {
+      if (!appData || !latestMatchday) {
+        return;
+      }
+
+      if (activeView === "season") {
+        renderSeasonView();
+      } else {
+        renderMatchdayView();
+      }
+    }
+
+    function renderSeasonView() {
+      const ranking = calculateSeasonRanking(appData);
+      const leaderNames = namesWithMaximum(
+        ranking,
+        result => result.totalPoints
+      );
+
+      const bestTs = namesWithMaximum(
+        ranking,
+        result => result.tsPoints
+      );
+
+      const bestMs = namesWithMaximum(
+        ranking,
+        result => result.msPoints
+      );
+
+      document.getElementById("summary").innerHTML = [
+        createSummaryCard(
+          "Spieltage",
+          appData.matchdays.length
+        ),
+        createSummaryCard(
+          "Tabellenführer",
+          leaderNames
+        ),
+        createSummaryCard(
+          "Bestes TS",
+          bestTs
+        ),
+        createSummaryCard(
+          "Bestes MS",
+          bestMs
+        )
+      ].join("");
+
+      document.getElementById(
+        "ranking-title"
+      ).textContent = "Saisonwertung";
+
+      document.getElementById(
+        "ranking-label"
+      ).textContent =
+        `${appData.matchdays.length} Spieltag` +
+        `${appData.matchdays.length === 1 ? "" : "e"}`;
+
+      document.getElementById("ranking-head").innerHTML = `
+        <tr>
+          <th>Rang</th>
+          <th>Spieler</th>
+          <th>TS</th>
+          <th>MS</th>
+          <th>Gesamt</th>
+          <th>Tagessiege</th>
+        </tr>
+      `;
+
+      document.getElementById("ranking-body").innerHTML =
+        ranking.map(result => {
+          const rankClass =
+            result.rank === 1
+              ? "rank rank-1"
+              : "rank";
+
+          return `
+            <tr>
+              <td class="${rankClass}">
+                ${result.rank}
+              </td>
+
+              <td class="player">
+                ${result.name}
+              </td>
+
+              <td>${result.tsPoints}</td>
+              <td>${result.msPoints}</td>
+
+              <td class="total">
+                ${result.totalPoints}
+              </td>
+
+              <td>${result.matchdayWins}</td>
+            </tr>
+          `;
+        }).join("");
+    }
+
+    function renderMatchdayView() {
+      const results = latestMatchday.results;
+
+      const winnerNames = namesWithMaximum(
+        results,
+        result => result.matchday_points
+      );
+
+      const bestTs = namesWithMaximum(
+        results,
+        result => result.ts.points
+      );
+
+      const bestMs = namesWithMaximum(
+        results,
+        result => result.ms.points
+      );
+
+      document.getElementById("summary").innerHTML = [
+        createSummaryCard(
+          "Spieltag",
+          latestMatchday.matchday
+        ),
+        createSummaryCard(
+          "Tagessieger",
+          winnerNames
+        ),
+        createSummaryCard(
+          "Bestes TS",
+          bestTs
+        ),
+        createSummaryCard(
+          "Bestes MS",
+          bestMs
+        )
+      ].join("");
+
+      document.getElementById(
+        "ranking-title"
+      ).textContent = "Spieltagswertung";
+
+      document.getElementById(
+        "ranking-label"
+      ).textContent =
+        `Spieltag ${latestMatchday.matchday}`;
+
+      document.getElementById("ranking-head").innerHTML = `
+        <tr>
+          <th>Rang</th>
+          <th>Spieler</th>
+          <th>TS</th>
+          <th>MS</th>
+          <th>Gesamt</th>
+          <th>Rohpunkte</th>
+        </tr>
+      `;
+
+      document.getElementById("ranking-body").innerHTML =
+        results.map(result => {
+          const rankClass =
+            result.matchday_rank === 1
+              ? "rank rank-1"
+              : "rank";
+
+          return `
+            <tr>
+              <td class="${rankClass}">
+                ${result.matchday_rank}
+              </td>
+
+              <td class="player">
+                ${result.name}
+              </td>
+
+              <td>
+                <strong>${result.ts.points}</strong>
+              </td>
+
+              <td>
+                <strong>${result.ms.points}</strong>
+              </td>
+
+              <td class="total">
+                ${result.matchday_points}
+              </td>
+
+              <td class="raw">
+                TS ${result.ts.raw_points}
+                ·
+                MS ${result.ms.raw_points}
+              </td>
+            </tr>
+          `;
+        }).join("");
+    }
+
     async function loadData() {
       const loading = document.getElementById("loading");
       const tableWrapper =
@@ -302,35 +669,40 @@
           );
         }
 
-        const data = await response.json();
+        appData = await response.json();
 
         if (
-          !Array.isArray(data.matchdays) ||
-          data.matchdays.length === 0
+          !Array.isArray(appData.matchdays) ||
+          appData.matchdays.length === 0
         ) {
           throw new Error(
             "Es sind noch keine Spieltage gespeichert."
           );
         }
 
-        const matchday = getLatestMatchday(data.matchdays);
-        const results = matchday.results;
+        latestMatchday = getLatestMatchday(
+          appData.matchdays
+        );
 
-        if (!Array.isArray(results) || results.length !== 9) {
+        if (
+          !Array.isArray(latestMatchday.results) ||
+          latestMatchday.results.length !== 9
+        ) {
           throw new Error(
             "Die Spieltagsdaten sind nicht vollständig."
           );
         }
 
-        renderSummary(data, matchday);
-        renderRanking(results);
-
-        document.getElementById(
-          "matchday-label"
-        ).textContent = `Spieltag ${matchday.matchday}`;
+        renderActiveView();
 
         loading.hidden = true;
         tableWrapper.hidden = false;
+
+        document.getElementById(
+          "footer"
+        ).textContent =
+          "Tasmania Hackentrick · Aktualisiert " +
+          formatDate(appData.updated_at);
       } catch (error) {
         console.error(error);
 
@@ -340,82 +712,10 @@
       }
     }
 
-    function renderSummary(data, matchday) {
-      const leader = matchday.results[0];
-
-      const bestTs = [...matchday.results].sort(
-        (a, b) => b.ts.points - a.ts.points
-      )[0];
-
-      const bestMs = [...matchday.results].sort(
-        (a, b) => b.ms.points - a.ms.points
-      )[0];
-
-      const summary = document.getElementById("summary");
-
-      summary.innerHTML = [
-        createSummaryCard(
-          "Spieltag",
-          matchday.matchday
-        ),
-        createSummaryCard(
-          "Tagessieger",
-          leader.name
-        ),
-        createSummaryCard(
-          "Bestes TS",
-          bestTs.name
-        ),
-        createSummaryCard(
-          "Bestes MS",
-          bestMs.name
-        )
-      ].join("");
-    }
-
-    function renderRanking(results) {
-      const tbody = document.getElementById("ranking-body");
-
-      tbody.innerHTML = results.map(result => {
-        const rankClass =
-          result.matchday_rank === 1
-            ? "rank rank-1"
-            : "rank";
-
-        return `
-          <tr>
-            <td class="${rankClass}">
-              ${result.matchday_rank}
-            </td>
-
-            <td class="player">
-              ${result.name}
-            </td>
-
-            <td>
-              <strong>${result.ts.points}</strong>
-            </td>
-
-            <td>
-              <strong>${result.ms.points}</strong>
-            </td>
-
-            <td class="total">
-              ${result.matchday_points}
-            </td>
-
-            <td class="raw">
-              TS ${result.ts.raw_points}
-              ·
-              MS ${result.ms.raw_points}
-            </td>
-          </tr>
-        `;
-      }).join("");
-    }
-
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("service-worker.js");
+      navigator.serviceWorker.register(
+        "service-worker.js"
+      );
     }
 
     loadData();
