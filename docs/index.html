@@ -205,7 +205,8 @@
       box-shadow: var(--shadow);
     }
 
-    .matchday-controls label {
+    .matchday-controls label,
+    .season-controls label {
       display: block;
       margin-bottom: 7px;
       color: var(--muted);
@@ -215,7 +216,8 @@
       letter-spacing: 0.06em;
     }
 
-    .matchday-select {
+    .matchday-select,
+    .season-matchday-select {
       width: 100%;
       min-height: 44px;
       padding: 8px 36px 8px 12px;
@@ -225,9 +227,11 @@
       background: var(--white);
       color: var(--navy);
       font-weight: 800;
+      cursor: pointer;
     }
 
-    .matchday-select:focus {
+    .matchday-select:focus,
+    .season-matchday-select:focus {
       border-color: var(--red);
       box-shadow:
         0 0 0 3px rgb(200 29 37 / 13%);
@@ -338,29 +342,24 @@
     }
 
     .section-heading {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      padding: 18px 16px 14px;
+      padding: 18px 16px 15px;
     }
 
     .section-heading h2 {
       margin: 0;
       color: var(--navy);
-      font-size: 1.22rem;
+      font-size: 1.28rem;
     }
 
-    .ranking-controls {
+    .season-heading-block {
       display: flex;
-      align-items: center;
-      gap: 10px;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 13px;
     }
 
-    .ranking-controls span {
-      color: var(--muted);
-      font-size: 0.88rem;
-      font-weight: 650;
+    .season-controls {
+      width: min(100%, 280px);
     }
 
     .table-wrapper {
@@ -426,8 +425,16 @@
     }
 
     tbody tr.is-me {
+      background:
+        linear-gradient(
+          90deg,
+          #fbdde0,
+          #fff4f5 48%,
+          #ffffff 82%
+        ) !important;
       box-shadow:
-        inset 5px 0 0 var(--red);
+        inset 7px 0 0 var(--red),
+        inset 0 0 0 2px rgb(200 29 37 / 40%);
     }
 
     .rank-badge {
@@ -467,18 +474,25 @@
       font-weight: 800;
     }
 
+    tbody tr.is-me .player {
+      color: var(--red-dark);
+      font-weight: 950;
+    }
+
     .you-badge {
       display: inline-flex;
       align-items: center;
       margin-left: 7px;
-      padding: 2px 7px;
+      padding: 3px 8px;
       border-radius: 999px;
-      background: var(--red-soft);
-      color: var(--red-dark);
+      background: var(--red);
+      color: var(--white);
+      box-shadow:
+        0 3px 8px rgb(200 29 37 / 24%);
       font-size: 0.67rem;
-      font-weight: 850;
+      font-weight: 900;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.05em;
       vertical-align: middle;
     }
 
@@ -608,8 +622,27 @@
     }
 
     .ranking-item.is-me {
-      outline: 2px solid rgb(200 29 37 / 35%);
-      outline-offset: -2px;
+      border: 2px solid var(--red);
+      background:
+        linear-gradient(
+          105deg,
+          #fbdde0,
+          #fff1f3 52%,
+          #ffffff 90%
+        );
+      box-shadow:
+        0 8px 20px rgb(200 29 37 / 17%),
+        inset 0 0 0 1px rgb(255 255 255 / 70%);
+    }
+
+    .ranking-item.is-me::before {
+      width: 7px;
+      background: var(--red);
+    }
+
+    .ranking-item.is-me .mobile-player-name {
+      color: var(--red-dark);
+      font-weight: 950;
     }
 
     .mobile-player {
@@ -807,9 +840,8 @@
         padding-left: 10px;
       }
 
-      .section-heading {
-        align-items: stretch;
-        flex-direction: column;
+      .season-controls {
+        width: 100%;
       }
 
       .desktop-ranking {
@@ -952,12 +984,25 @@
         id="ranking-heading"
         class="section-heading"
       >
-        <h2 id="ranking-title">
-          Gesamtwertung
-        </h2>
+        <div class="season-heading-block">
+          <h2 id="ranking-title">
+            Gesamtwertung
+          </h2>
 
-        <div class="ranking-controls">
-          <span id="ranking-label"></span>
+          <div
+            id="season-controls"
+            class="season-controls"
+          >
+            <label for="season-matchday-select">
+              Stand nach
+            </label>
+
+            <select
+              id="season-matchday-select"
+              class="season-matchday-select"
+              aria-label="Spieltag der Gesamtwertung auswählen"
+            ></select>
+          </div>
         </div>
       </div>
 
@@ -1062,6 +1107,7 @@
     let appData = null;
     let latestMatchday = null;
     let selectedMatchday = null;
+    let selectedSeasonMatchday = null;
     let selectedPlayer = null;
     let activeView = "season";
 
@@ -1077,6 +1123,9 @@
     const matchdaySelect =
       document.getElementById("matchday-select");
 
+    const seasonMatchdaySelect =
+      document.getElementById("season-matchday-select");
+
     const hero =
       document.getElementById("hero");
 
@@ -1085,9 +1134,6 @@
 
     const rankingHeading =
       document.getElementById("ranking-heading");
-
-    const rankingLabel =
-      document.getElementById("ranking-label");
 
     const loading =
       document.getElementById("loading");
@@ -1128,6 +1174,16 @@
           Number(event.target.value);
 
         renderMatchdayView();
+      }
+    );
+
+    seasonMatchdaySelect.addEventListener(
+      "change",
+      event => {
+        selectedSeasonMatchday =
+          Number(event.target.value);
+
+        renderSeasonView();
       }
     );
 
@@ -1200,6 +1256,12 @@
       `;
     }
 
+    function getSortedMatchdayNumbers() {
+      return appData.matchdays
+        .map(item => Number(item.matchday))
+        .sort((a, b) => a - b);
+    }
+
     function getLatestMatchday(matchdays) {
       return [...matchdays].sort(
         (a, b) =>
@@ -1225,7 +1287,8 @@
 
     function namesWithMaximum(
       results,
-      getValue
+      getValue,
+      separator = ", "
     ) {
       const maximum = Math.max(
         ...results.map(getValue)
@@ -1237,7 +1300,7 @@
             getValue(result) === maximum
         )
         .map(result => result.name)
-        .join(", ");
+        .join(separator);
     }
 
     function assignCompetitionRanks(
@@ -1286,7 +1349,7 @@
 
     function calculateSeasonRanking(
       data,
-      maximumMatchday = Infinity
+      maximumMatchday
     ) {
       const totals = new Map();
 
@@ -1339,28 +1402,36 @@
       );
     }
 
-    function getSeasonRankingWithTrend() {
-      const sortedMatchdayNumbers =
-        appData.matchdays
-          .map(item => Number(item.matchday))
-          .sort((a, b) => a - b);
+    function getPreviousAvailableMatchday(
+      selectedNumber
+    ) {
+      const earlierMatchdays =
+        getSortedMatchdayNumbers().filter(
+          number =>
+            number < Number(selectedNumber)
+        );
 
-      const currentNumber =
-        sortedMatchdayNumbers[
-          sortedMatchdayNumbers.length - 1
-        ];
+      if (earlierMatchdays.length === 0) {
+        return null;
+      }
 
-      const previousNumber =
-        sortedMatchdayNumbers.length > 1
-          ? sortedMatchdayNumbers[
-              sortedMatchdayNumbers.length - 2
-            ]
-          : null;
+      return earlierMatchdays[
+        earlierMatchdays.length - 1
+      ];
+    }
 
+    function getSeasonRankingWithTrend(
+      selectedNumber
+    ) {
       const currentRanking =
         calculateSeasonRanking(
           appData,
-          currentNumber
+          selectedNumber
+        );
+
+      const previousNumber =
+        getPreviousAvailableMatchday(
+          selectedNumber
         );
 
       if (previousNumber === null) {
@@ -1399,19 +1470,24 @@
             Number(a.matchday)
         );
 
-      matchdaySelect.innerHTML =
-        sortedMatchdays
-          .map(
-            matchday => `
-              <option value="${matchday.matchday}">
-                Spieltag ${matchday.matchday}
-              </option>
-            `
-          )
-          .join("");
+      const options = sortedMatchdays
+        .map(
+          matchday => `
+            <option value="${matchday.matchday}">
+              Spieltag ${matchday.matchday}
+            </option>
+          `
+        )
+        .join("");
+
+      matchdaySelect.innerHTML = options;
+      seasonMatchdaySelect.innerHTML = options;
 
       matchdaySelect.value =
         String(selectedMatchday);
+
+      seasonMatchdaySelect.value =
+        String(selectedSeasonMatchday);
     }
 
     function populatePlayerSelect() {
@@ -1532,18 +1608,18 @@
       hero.hidden = true;
       summary.hidden = true;
       rankingHeading.hidden = false;
-      rankingLabel.hidden = false;
+
+      seasonMatchdaySelect.value =
+        String(selectedSeasonMatchday);
 
       const ranking =
-        getSeasonRankingWithTrend();
+        getSeasonRankingWithTrend(
+          selectedSeasonMatchday
+        );
 
       document.getElementById(
         "ranking-title"
       ).textContent = "Gesamtwertung";
-
-      rankingLabel.textContent =
-        `${appData.matchdays.length} Spieltag` +
-        `${appData.matchdays.length === 1 ? "" : "e"}`;
 
       document.getElementById(
         "ranking-head"
@@ -1728,21 +1804,24 @@
         namesWithMaximum(
           results,
           result =>
-            result.matchday_points
+            result.matchday_points,
+          " & "
         );
 
       const bestTs =
         namesWithMaximum(
           results,
           result =>
-            result.ts.points
+            result.ts.points,
+          " & "
         );
 
       const bestMs =
         namesWithMaximum(
           results,
           result =>
-            result.ms.points
+            result.ms.points,
+          " & "
         );
 
       document.getElementById(
@@ -1956,6 +2035,9 @@
         }
 
         selectedMatchday =
+          Number(latestMatchday.matchday);
+
+        selectedSeasonMatchday =
           Number(latestMatchday.matchday);
 
         const storedPlayer =
