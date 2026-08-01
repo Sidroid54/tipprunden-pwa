@@ -12,7 +12,22 @@
 
   <title>Tasmania Hackentrick</title>
 
-  <link rel="manifest" href="manifest.json">
+  <link
+    rel="manifest"
+    href="/tipprunden-pwa/manifest.json"
+  >
+
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="192x192"
+    href="/tipprunden-pwa/assets/icon-tasmania-192.png"
+  >
+
+  <link
+    rel="apple-touch-icon"
+    href="/tipprunden-pwa/assets/icon-tasmania-192.png"
+  >
 
   <style>
     :root {
@@ -184,6 +199,44 @@
         0 4px 12px rgb(200 29 37 / 25%);
     }
 
+    .matchday-controls {
+      margin-bottom: 14px;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--white);
+      box-shadow: var(--shadow);
+    }
+
+    .matchday-controls label {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .matchday-select {
+      width: 100%;
+      min-height: 44px;
+      padding: 8px 36px 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      outline: none;
+      background: var(--white);
+      color: var(--navy);
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .matchday-select:focus {
+      border-color: var(--red);
+      box-shadow:
+        0 0 0 3px rgb(200 29 37 / 13%);
+    }
+
     .hero-card {
       position: relative;
       overflow: hidden;
@@ -322,24 +375,6 @@
       color: var(--muted);
       font-size: 0.88rem;
       font-weight: 650;
-    }
-
-    .matchday-select {
-      min-height: 42px;
-      padding: 7px 34px 7px 12px;
-      border: 1px solid var(--border);
-      border-radius: 11px;
-      outline: none;
-      background: var(--white);
-      color: var(--navy);
-      font-weight: 800;
-      cursor: pointer;
-    }
-
-    .matchday-select:focus {
-      border-color: var(--red);
-      box-shadow:
-        0 0 0 3px rgb(200 29 37 / 13%);
     }
 
     .table-wrapper {
@@ -586,14 +621,6 @@
         flex-direction: column;
       }
 
-      .ranking-controls {
-        width: 100%;
-      }
-
-      .matchday-select {
-        width: 100%;
-      }
-
       .desktop-ranking {
         display: none;
       }
@@ -625,6 +652,21 @@
 
       .summary-grid {
         gap: 14px;
+      }
+
+      .matchday-controls {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+      }
+
+      .matchday-controls label {
+        margin-bottom: 0;
+      }
+
+      .matchday-controls .matchday-select {
+        width: min(100%, 280px);
       }
     }
   </style>
@@ -677,6 +719,22 @@
       </button>
     </nav>
 
+    <div
+      id="matchday-controls"
+      class="matchday-controls"
+      hidden
+    >
+      <label for="matchday-select">
+        Spieltag auswählen
+      </label>
+
+      <select
+        id="matchday-select"
+        class="matchday-select"
+        aria-label="Spieltag auswählen"
+      ></select>
+    </div>
+
     <section
       id="hero"
       class="hero-card"
@@ -709,20 +767,16 @@
     ></div>
 
     <section class="card ranking-card">
-      <div class="section-heading">
+      <div
+        id="ranking-heading"
+        class="section-heading"
+      >
         <h2 id="ranking-title">
           Saisonwertung
         </h2>
 
         <div class="ranking-controls">
           <span id="ranking-label"></span>
-
-          <select
-            id="matchday-select"
-            class="matchday-select"
-            aria-label="Spieltag auswählen"
-            hidden
-          ></select>
         </div>
       </div>
 
@@ -779,9 +833,19 @@
         "matchday-tab"
       );
 
+    const matchdayControls =
+      document.getElementById(
+        "matchday-controls"
+      );
+
     const matchdaySelect =
       document.getElementById(
         "matchday-select"
+      );
+
+    const rankingHeading =
+      document.getElementById(
+        "ranking-heading"
       );
 
     const rankingLabel =
@@ -1006,8 +1070,7 @@
               result.matchday_rank
             ) === 1
           ) {
-            participant.matchdayWins +=
-              1;
+            participant.matchdayWins += 1;
           }
         }
       }
@@ -1033,8 +1096,7 @@
               <option
                 value="${matchday.matchday}"
               >
-                Spieltag
-                ${matchday.matchday}
+                Spieltag ${matchday.matchday}
               </option>
             `
           )
@@ -1081,7 +1143,8 @@
     }
 
     function renderSeasonView() {
-      matchdaySelect.hidden = true;
+      matchdayControls.hidden = true;
+      rankingHeading.hidden = false;
       rankingLabel.hidden = false;
 
       const ranking =
@@ -1247,39 +1310,26 @@
                   ${result.rank}
                 </span>
 
-                <div
-                  class="mobile-player"
-                >
+                <div class="mobile-player">
                   <div
-                    class="
-                      mobile-player-name
-                    "
+                    class="mobile-player-name"
                   >
                     ${result.name}
                   </div>
 
                   <div
-                    class="
-                      mobile-details
-                    "
+                    class="mobile-details"
                   >
                     <span
-                      class="
-                        points-badge
-                      "
+                      class="points-badge"
                     >
-                      TS
-                      ${result.tsPoints}
+                      TS ${result.tsPoints}
                     </span>
 
                     <span
-                      class="
-                        points-badge
-                        red
-                      "
+                      class="points-badge red"
                     >
-                      MS
-                      ${result.msPoints}
+                      MS ${result.msPoints}
                     </span>
 
                     <span>
@@ -1299,9 +1349,7 @@
                   ${result.totalPoints}
 
                   <span
-                    class="
-                      mobile-total-label
-                    "
+                    class="mobile-total-label"
                   >
                     Punkte
                   </span>
@@ -1313,6 +1361,9 @@
     }
 
     function renderMatchdayView() {
+      matchdayControls.hidden = false;
+      rankingHeading.hidden = true;
+
       const matchday =
         appData.matchdays.find(
           item =>
@@ -1327,6 +1378,11 @@
       if (!matchday) {
         return;
       }
+
+      matchdaySelect.value =
+        String(
+          matchday.matchday
+        );
 
       const results =
         [...matchday.results].sort(
@@ -1349,8 +1405,7 @@
               b.name,
               "de",
               {
-                sensitivity:
-                  "base"
+                sensitivity: "base"
               }
             );
           }
@@ -1417,20 +1472,6 @@
       ].join("");
 
       document.getElementById(
-        "ranking-title"
-      ).textContent =
-        "Spieltagswertung";
-
-      rankingLabel.hidden = true;
-
-      matchdaySelect.hidden = false;
-
-      matchdaySelect.value =
-        String(
-          matchday.matchday
-        );
-
-      document.getElementById(
         "ranking-head"
       ).innerHTML = `
         <tr>
@@ -1483,11 +1524,9 @@
                 </td>
 
                 <td class="raw">
-                  TS
-                  ${result.ts.raw_points}
+                  TS ${result.ts.raw_points}
                   ·
-                  MS
-                  ${result.ms.raw_points}
+                  MS ${result.ms.raw_points}
                 </td>
               </tr>
             `;
@@ -1520,39 +1559,26 @@
                   ${result.matchday_rank}
                 </span>
 
-                <div
-                  class="mobile-player"
-                >
+                <div class="mobile-player">
                   <div
-                    class="
-                      mobile-player-name
-                    "
+                    class="mobile-player-name"
                   >
                     ${result.name}
                   </div>
 
                   <div
-                    class="
-                      mobile-details
-                    "
+                    class="mobile-details"
                   >
                     <span
-                      class="
-                        points-badge
-                      "
+                      class="points-badge"
                     >
-                      TS
-                      ${result.ts.points}
+                      TS ${result.ts.points}
                     </span>
 
                     <span
-                      class="
-                        points-badge
-                        red
-                      "
+                      class="points-badge red"
                     >
-                      MS
-                      ${result.ms.points}
+                      MS ${result.ms.points}
                     </span>
 
                     <span>
@@ -1570,9 +1596,7 @@
                   ${result.matchday_points}
 
                   <span
-                    class="
-                      mobile-total-label
-                    "
+                    class="mobile-total-label"
                   >
                     Punkte
                   </span>
