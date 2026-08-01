@@ -8,7 +8,7 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <meta name="theme-color" content="#0d5132">
+  <meta name="theme-color" content="#0b1f3a">
 
   <title>Tasmania Hackentrick</title>
 
@@ -16,20 +16,41 @@
 
   <style>
     :root {
-      --background: #f3f5f7;
+      --navy: #0b1f3a;
+      --navy-light: #17365f;
+      --navy-soft: #e9eef5;
+
+      --red: #c81d25;
+      --red-dark: #98151b;
+      --red-soft: #fdecee;
+
+      --white: #ffffff;
+      --background: #f3f5f8;
       --surface: #ffffff;
-      --text: #17202a;
-      --muted: #68737d;
-      --border: #dde2e7;
-      --primary: #136f45;
-      --primary-dark: #0d5132;
-      --primary-light: #eaf5ef;
-      --gold: #d59b22;
-      --danger: #a32121;
+
+      --text: #172033;
+      --muted: #6b7480;
+      --border: #dce1e8;
+
+      --gold: #d39b28;
+      --gold-soft: #fff7df;
+
+      --silver: #8b96a3;
+      --silver-soft: #f1f3f5;
+
+      --bronze: #a66a3f;
+      --bronze-soft: #f8eee7;
+
+      --shadow:
+        0 8px 24px rgb(11 31 58 / 8%);
     }
 
     * {
       box-sizing: border-box;
+    }
+
+    html {
+      background: var(--background);
     }
 
     body {
@@ -44,95 +65,216 @@
         sans-serif;
     }
 
+    button,
+    select {
+      font: inherit;
+    }
+
     header {
-      padding: 24px 16px 28px;
+      position: relative;
+      overflow: hidden;
+      padding: 28px 16px 34px;
       background:
         linear-gradient(
           135deg,
-          var(--primary-dark),
-          var(--primary)
+          var(--navy),
+          var(--navy-light)
         );
-      color: white;
+      color: var(--white);
+    }
+
+    header::after {
+      content: "";
+      position: absolute;
+      right: -70px;
+      bottom: -105px;
+      width: 240px;
+      height: 240px;
+      border: 34px solid rgb(255 255 255 / 7%);
+      border-radius: 50%;
     }
 
     .header-content,
     main {
-      width: min(100%, 900px);
+      width: min(100%, 980px);
       margin: 0 auto;
+    }
+
+    .brand-line {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 46px;
+      height: 46px;
+      flex: 0 0 auto;
+      place-items: center;
+      border: 2px solid rgb(255 255 255 / 65%);
+      border-radius: 14px;
+      background: var(--red);
+      box-shadow:
+        0 6px 16px rgb(0 0 0 / 18%);
+      font-size: 1.35rem;
+      font-weight: 900;
     }
 
     header h1 {
       margin: 0;
-      font-size: clamp(1.7rem, 7vw, 2.7rem);
+      font-size: clamp(1.65rem, 7vw, 2.8rem);
+      line-height: 1.05;
     }
 
     header p {
       margin: 8px 0 0;
-      opacity: 0.85;
+      color: rgb(255 255 255 / 78%);
+      font-size: 0.95rem;
+    }
+
+    .red-line {
+      width: 72px;
+      height: 4px;
+      margin-top: 18px;
+      border-radius: 999px;
+      background: var(--red);
     }
 
     main {
-      padding: 18px 12px 40px;
+      padding: 18px 12px 44px;
     }
 
     .tabs {
+      position: sticky;
+      z-index: 10;
+      top: 0;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 6px;
       margin-bottom: 18px;
       padding: 5px;
-      background: #e3e7ea;
-      border-radius: 14px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: rgb(243 245 248 / 94%);
+      box-shadow:
+        0 6px 20px rgb(11 31 58 / 8%);
+      backdrop-filter: blur(12px);
     }
 
     .tab-button {
-      min-height: 46px;
+      min-height: 48px;
       border: 0;
-      border-radius: 10px;
+      border-radius: 11px;
       background: transparent;
-      color: var(--muted);
-      font: inherit;
-      font-weight: 700;
+      color: var(--navy);
+      font-weight: 800;
       cursor: pointer;
     }
 
     .tab-button.active {
-      background: var(--surface);
-      color: var(--primary-dark);
-      box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
+      background: var(--red);
+      color: var(--white);
+      box-shadow:
+        0 4px 12px rgb(200 29 37 / 25%);
+    }
+
+    .hero-card {
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 14px;
+      padding: 20px;
+      border-radius: 20px;
+      background:
+        linear-gradient(
+          135deg,
+          var(--navy),
+          var(--navy-light)
+        );
+      color: var(--white);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      right: -35px;
+      bottom: -52px;
+      width: 150px;
+      height: 150px;
+      border: 25px solid rgb(255 255 255 / 7%);
+      border-radius: 50%;
+    }
+
+    .hero-label {
+      position: relative;
+      z-index: 1;
+      color: rgb(255 255 255 / 72%);
+      font-size: 0.74rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .hero-value {
+      position: relative;
+      z-index: 1;
+      margin-top: 6px;
+      overflow-wrap: anywhere;
+      font-size: clamp(1.65rem, 8vw, 2.5rem);
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .hero-detail {
+      position: relative;
+      z-index: 1;
+      margin-top: 8px;
+      color: rgb(255 255 255 / 75%);
+      font-size: 0.9rem;
     }
 
     .summary-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
+      gap: 10px;
       margin-bottom: 18px;
     }
 
     .card {
-      background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      box-shadow: 0 4px 18px rgb(0 0 0 / 6%);
+      border-radius: 18px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
     }
 
     .summary-card {
       min-width: 0;
-      padding: 16px;
+      padding: 15px;
     }
 
     .summary-label {
       color: var(--muted);
-      font-size: 0.75rem;
+      font-size: 0.7rem;
+      font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
     }
 
     .summary-value {
       margin-top: 6px;
       overflow-wrap: anywhere;
-      font-size: 1.35rem;
-      font-weight: 750;
+      color: var(--navy);
+      font-size: 1.2rem;
+      font-weight: 850;
+    }
+
+    .summary-card.red-accent {
+      border-top: 4px solid var(--red);
+    }
+
+    .summary-card.navy-accent {
+      border-top: 4px solid var(--navy);
     }
 
     .ranking-card {
@@ -143,13 +285,14 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      padding: 18px 16px 12px;
+      gap: 14px;
+      padding: 18px 16px 14px;
     }
 
     .section-heading h2 {
       margin: 0;
-      font-size: 1.25rem;
+      color: var(--navy);
+      font-size: 1.22rem;
     }
 
     .ranking-controls {
@@ -160,19 +303,26 @@
 
     .ranking-controls span {
       color: var(--muted);
-      font-size: 0.9rem;
+      font-size: 0.88rem;
+      font-weight: 650;
     }
 
     .matchday-select {
-      min-height: 38px;
-      padding: 6px 34px 6px 12px;
+      min-height: 42px;
+      padding: 7px 34px 7px 12px;
       border: 1px solid var(--border);
-      border-radius: 10px;
-      background: var(--surface);
-      color: var(--text);
-      font: inherit;
-      font-weight: 650;
+      border-radius: 11px;
+      outline: none;
+      background: var(--white);
+      color: var(--navy);
+      font-weight: 800;
       cursor: pointer;
+    }
+
+    .matchday-select:focus {
+      border-color: var(--red);
+      box-shadow:
+        0 0 0 3px rgb(200 29 37 / 13%);
     }
 
     .table-wrapper {
@@ -181,13 +331,13 @@
 
     table {
       width: 100%;
-      min-width: 570px;
+      min-width: 650px;
       border-collapse: collapse;
     }
 
     th,
     td {
-      padding: 13px 12px;
+      padding: 14px 12px;
       border-top: 1px solid var(--border);
       text-align: center;
       white-space: nowrap;
@@ -195,9 +345,10 @@
 
     th {
       color: var(--muted);
-      font-size: 0.76rem;
+      background: #f8f9fb;
+      font-size: 0.72rem;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.05em;
     }
 
     th:nth-child(2),
@@ -205,20 +356,50 @@
       text-align: left;
     }
 
-    tbody tr:first-child {
-      background: #fff8e5;
+    tbody tr:hover {
+      background: #f8f9fb;
     }
 
     .rank {
-      font-weight: 750;
+      font-weight: 900;
     }
 
-    .rank-1 {
+    .rank-badge {
+      display: inline-grid;
+      width: 32px;
+      height: 32px;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--navy-soft);
+      color: var(--navy);
+      font-size: 0.88rem;
+      font-weight: 900;
+    }
+
+    .rank-badge.rank-1 {
+      background: var(--gold-soft);
       color: var(--gold);
     }
 
+    .rank-badge.rank-2 {
+      background: var(--silver-soft);
+      color: var(--silver);
+    }
+
+    .rank-badge.rank-3 {
+      background: var(--bronze-soft);
+      color: var(--bronze);
+    }
+
     .player {
-      font-weight: 700;
+      color: var(--navy);
+      font-weight: 800;
+    }
+
+    .total {
+      color: var(--red-dark);
+      font-size: 1.05rem;
+      font-weight: 900;
     }
 
     .raw {
@@ -226,20 +407,128 @@
       font-size: 0.82rem;
     }
 
-    .total {
-      color: var(--primary-dark);
-      font-size: 1.05rem;
-      font-weight: 800;
+    .desktop-ranking {
+      display: block;
+    }
+
+    .mobile-ranking {
+      display: none;
+      padding: 0 12px 14px;
+    }
+
+    .ranking-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .ranking-item {
+      position: relative;
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr) auto;
+      gap: 11px;
+      align-items: center;
+      overflow: hidden;
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: var(--white);
+    }
+
+    .ranking-item:first-child {
+      border-color: rgb(211 155 40 / 48%);
+      background:
+        linear-gradient(
+          90deg,
+          var(--gold-soft),
+          var(--white) 48%
+        );
+    }
+
+    .ranking-item::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 4px;
+      background: var(--navy);
+    }
+
+    .ranking-item.place-1::before {
+      background: var(--gold);
+    }
+
+    .ranking-item.place-2::before {
+      background: var(--silver);
+    }
+
+    .ranking-item.place-3::before {
+      background: var(--bronze);
+    }
+
+    .mobile-player {
+      min-width: 0;
+    }
+
+    .mobile-player-name {
+      overflow: hidden;
+      color: var(--navy);
+      font-weight: 850;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .mobile-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px 8px;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+
+    .points-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: var(--navy-soft);
+      color: var(--navy);
+      font-weight: 750;
+    }
+
+    .points-badge.red {
+      background: var(--red-soft);
+      color: var(--red-dark);
+    }
+
+    .mobile-total {
+      min-width: 48px;
+      color: var(--red-dark);
+      font-size: 1.22rem;
+      font-weight: 950;
+      text-align: right;
+    }
+
+    .mobile-total-label {
+      display: block;
+      margin-top: 1px;
+      color: var(--muted);
+      font-size: 0.62rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
 
     .status {
-      padding: 20px;
-      text-align: center;
+      padding: 22px;
       color: var(--muted);
+      text-align: center;
     }
 
     .error {
-      color: var(--danger);
+      color: var(--red-dark);
     }
 
     [hidden] {
@@ -249,13 +538,23 @@
     footer {
       padding: 24px 12px;
       color: var(--muted);
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       text-align: center;
     }
 
-    @media (max-width: 520px) {
+    @media (max-width: 650px) {
+      header {
+        padding-top: 23px;
+        padding-bottom: 28px;
+      }
+
+      main {
+        padding-right: 10px;
+        padding-left: 10px;
+      }
+
       .section-heading {
-        align-items: flex-start;
+        align-items: stretch;
         flex-direction: column;
       }
 
@@ -266,11 +565,33 @@
       .matchday-select {
         width: 100%;
       }
+
+      .desktop-ranking {
+        display: none;
+      }
+
+      .mobile-ranking {
+        display: block;
+      }
+
+      .ranking-card {
+        overflow: visible;
+        background: transparent;
+        box-shadow: none;
+      }
+
+      .ranking-card > .section-heading {
+        margin-bottom: 10px;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        background: var(--white);
+        box-shadow: var(--shadow);
+      }
     }
 
-    @media (min-width: 650px) {
+    @media (min-width: 720px) {
       .summary-grid {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(3, 1fr);
       }
 
       main {
@@ -283,8 +604,18 @@
 <body>
   <header>
     <div class="header-content">
-      <h1>Tasmania Hackentrick</h1>
-      <p>Tippspiel und Managerspiel in einer Wertung</p>
+      <div class="brand-line">
+        <div class="brand-mark">TH</div>
+
+        <div>
+          <h1>Tasmania Hackentrick</h1>
+          <p>
+            Tippspiel und Managerspiel in einer Wertung
+          </p>
+        </div>
+      </div>
+
+      <div class="red-line"></div>
     </div>
   </header>
 
@@ -306,6 +637,20 @@
         Spieltag
       </button>
     </nav>
+
+    <section id="hero" class="hero-card">
+      <div id="hero-label" class="hero-label">
+        Tabellenführer
+      </div>
+
+      <div id="hero-value" class="hero-value">
+        –
+      </div>
+
+      <div id="hero-detail" class="hero-detail">
+        Ergebnisse werden geladen …
+      </div>
+    </section>
 
     <div id="summary" class="summary-grid"></div>
 
@@ -330,14 +675,27 @@
       </div>
 
       <div
-        id="table-wrapper"
-        class="table-wrapper"
+        id="desktop-ranking"
+        class="desktop-ranking"
         hidden
       >
-        <table>
-          <thead id="ranking-head"></thead>
-          <tbody id="ranking-body"></tbody>
-        </table>
+        <div class="table-wrapper">
+          <table>
+            <thead id="ranking-head"></thead>
+            <tbody id="ranking-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div
+        id="mobile-ranking"
+        class="mobile-ranking"
+        hidden
+      >
+        <div
+          id="mobile-ranking-list"
+          class="ranking-list"
+        ></div>
       </div>
     </section>
   </main>
@@ -361,6 +719,18 @@
     const matchdaySelect =
       document.getElementById("matchday-select");
 
+    const rankingLabel =
+      document.getElementById("ranking-label");
+
+    const loading =
+      document.getElementById("loading");
+
+    const desktopRanking =
+      document.getElementById("desktop-ranking");
+
+    const mobileRanking =
+      document.getElementById("mobile-ranking");
+
     seasonTab.addEventListener("click", () => {
       setView("season");
     });
@@ -369,10 +739,15 @@
       setView("matchday");
     });
 
-    matchdaySelect.addEventListener("change", event => {
-      selectedMatchday = Number(event.target.value);
-      renderMatchdayView();
-    });
+    matchdaySelect.addEventListener(
+      "change",
+      event => {
+        selectedMatchday =
+          Number(event.target.value);
+
+        renderMatchdayView();
+      }
+    );
 
     function setView(view) {
       activeView = view;
@@ -390,11 +765,22 @@
       renderActiveView();
     }
 
-    function createSummaryCard(label, value) {
+    function createSummaryCard(
+      label,
+      value,
+      accent = "navy"
+    ) {
       return `
-        <article class="card summary-card">
-          <div class="summary-label">${label}</div>
-          <div class="summary-value">${value}</div>
+        <article
+          class="card summary-card ${accent}-accent"
+        >
+          <div class="summary-label">
+            ${label}
+          </div>
+
+          <div class="summary-value">
+            ${value}
+          </div>
         </article>
       `;
     }
@@ -402,7 +788,8 @@
     function getLatestMatchday(matchdays) {
       return [...matchdays].sort(
         (a, b) =>
-          Number(b.matchday) - Number(a.matchday)
+          Number(b.matchday) -
+          Number(a.matchday)
       )[0];
     }
 
@@ -411,19 +798,28 @@
         return "–";
       }
 
-      return new Intl.DateTimeFormat("de-DE", {
-        dateStyle: "short",
-        timeStyle: "short"
-      }).format(new Date(value));
+      return new Intl.DateTimeFormat(
+        "de-DE",
+        {
+          dateStyle: "short",
+          timeStyle: "short"
+        }
+      ).format(new Date(value));
     }
 
-    function namesWithMaximum(results, getValue) {
+    function namesWithMaximum(
+      results,
+      getValue
+    ) {
       const maximum = Math.max(
         ...results.map(getValue)
       );
 
       return results
-        .filter(result => getValue(result) === maximum)
+        .filter(
+          result =>
+            getValue(result) === maximum
+        )
         .map(result => result.name)
         .join(", ");
     }
@@ -432,39 +828,44 @@
       rows,
       pointsField
     ) {
-      const sorted = [...rows].sort((a, b) => {
-        const difference =
-          Number(b[pointsField]) -
-          Number(a[pointsField]);
+      const sorted = [...rows].sort(
+        (a, b) => {
+          const difference =
+            Number(b[pointsField]) -
+            Number(a[pointsField]);
 
-        if (difference !== 0) {
-          return difference;
+          if (difference !== 0) {
+            return difference;
+          }
+
+          return a.name.localeCompare(
+            b.name,
+            "de",
+            { sensitivity: "base" }
+          );
         }
-
-        return a.name.localeCompare(
-          b.name,
-          "de",
-          { sensitivity: "base" }
-        );
-      });
+      );
 
       let previousPoints = null;
       let currentRank = 0;
 
-      return sorted.map((row, index) => {
-        const points = Number(row[pointsField]);
+      return sorted.map(
+        (row, index) => {
+          const points =
+            Number(row[pointsField]);
 
-        if (points !== previousPoints) {
-          currentRank = index + 1;
+          if (points !== previousPoints) {
+            currentRank = index + 1;
+          }
+
+          previousPoints = points;
+
+          return {
+            ...row,
+            rank: currentRank
+          };
         }
-
-        previousPoints = points;
-
-        return {
-          ...row,
-          rank: currentRank
-        };
-      });
+      );
     }
 
     function calculateSeasonRanking(data) {
@@ -482,7 +883,8 @@
 
       for (const matchday of data.matchdays) {
         for (const result of matchday.results) {
-          const participant = totals.get(result.name);
+          const participant =
+            totals.get(result.name);
 
           if (!participant) {
             continue;
@@ -500,7 +902,9 @@
             result.matchday_points
           );
 
-          if (Number(result.matchday_rank) === 1) {
+          if (
+            Number(result.matchday_rank) === 1
+          ) {
             participant.matchdayWins += 1;
           }
         }
@@ -516,19 +920,39 @@
       const sortedMatchdays =
         [...appData.matchdays].sort(
           (a, b) =>
-            Number(b.matchday) - Number(a.matchday)
+            Number(b.matchday) -
+            Number(a.matchday)
         );
 
-      matchdaySelect.innerHTML = sortedMatchdays
-        .map(matchday => `
-          <option value="${matchday.matchday}">
-            Spieltag ${matchday.matchday}
-          </option>
-        `)
-        .join("");
+      matchdaySelect.innerHTML =
+        sortedMatchdays
+          .map(matchday => `
+            <option value="${matchday.matchday}">
+              Spieltag ${matchday.matchday}
+            </option>
+          `)
+          .join("");
 
       matchdaySelect.value =
         String(selectedMatchday);
+    }
+
+    function getRankClass(rank) {
+      const numericRank = Number(rank);
+
+      if (numericRank === 1) {
+        return "rank-1";
+      }
+
+      if (numericRank === 2) {
+        return "rank-2";
+      }
+
+      if (numericRank === 3) {
+        return "rank-3";
+      }
+
+      return "";
     }
 
     function renderActiveView() {
@@ -545,45 +969,75 @@
 
     function renderSeasonView() {
       matchdaySelect.hidden = true;
-
-      const rankingLabel =
-        document.getElementById("ranking-label");
-
       rankingLabel.hidden = false;
 
-      const ranking = calculateSeasonRanking(appData);
+      const ranking =
+        calculateSeasonRanking(appData);
 
-      const leaderNames = namesWithMaximum(
-        ranking,
-        result => result.totalPoints
-      );
+      const leaderNames =
+        namesWithMaximum(
+          ranking,
+          result => result.totalPoints
+        );
 
-      const bestTs = namesWithMaximum(
-        ranking,
-        result => result.tsPoints
-      );
+      const leaderPoints =
+        Math.max(
+          ...ranking.map(
+            result => result.totalPoints
+          )
+        );
 
-      const bestMs = namesWithMaximum(
-        ranking,
-        result => result.msPoints
-      );
+      const bestTs =
+        namesWithMaximum(
+          ranking,
+          result => result.tsPoints
+        );
 
-      document.getElementById("summary").innerHTML = [
+      const bestMs =
+        namesWithMaximum(
+          ranking,
+          result => result.msPoints
+        );
+
+      const mostWins =
+        namesWithMaximum(
+          ranking,
+          result => result.matchdayWins
+        );
+
+      document.getElementById(
+        "hero-label"
+      ).textContent = "Tabellenführer";
+
+      document.getElementById(
+        "hero-value"
+      ).textContent = leaderNames;
+
+      document.getElementById(
+        "hero-detail"
+      ).textContent =
+        `${leaderPoints} Gesamtpunkte`;
+
+      document.getElementById(
+        "summary"
+      ).innerHTML = [
         createSummaryCard(
           "Spieltage",
           appData.matchdays.length
         ),
         createSummaryCard(
-          "Tabellenführer",
-          leaderNames
+          "Bestes Tippspiel",
+          bestTs,
+          "red"
         ),
         createSummaryCard(
-          "Bestes TS",
-          bestTs
-        ),
-        createSummaryCard(
-          "Bestes MS",
+          "Bestes Managerspiel",
           bestMs
+        ),
+        createSummaryCard(
+          "Meiste Tagessiege",
+          mostWins,
+          "red"
         )
       ].join("");
 
@@ -610,79 +1064,183 @@
 
       document.getElementById(
         "ranking-body"
-      ).innerHTML = ranking.map(result => {
-        const rankClass =
-          result.rank === 1
-            ? "rank rank-1"
-            : "rank";
+      ).innerHTML = ranking
+        .map(result => {
+          const rankClass =
+            getRankClass(result.rank);
 
-        return `
-          <tr>
-            <td class="${rankClass}">
-              ${result.rank}
-            </td>
+          return `
+            <tr>
+              <td>
+                <span
+                  class="rank-badge ${rankClass}"
+                >
+                  ${result.rank}
+                </span>
+              </td>
 
-            <td class="player">
-              ${result.name}
-            </td>
+              <td class="player">
+                ${result.name}
+              </td>
 
-            <td>${result.tsPoints}</td>
-            <td>${result.msPoints}</td>
+              <td>${result.tsPoints}</td>
+              <td>${result.msPoints}</td>
 
-            <td class="total">
-              ${result.totalPoints}
-            </td>
+              <td class="total">
+                ${result.totalPoints}
+              </td>
 
-            <td>${result.matchdayWins}</td>
-          </tr>
-        `;
-      }).join("");
+              <td>
+                ${result.matchdayWins}
+              </td>
+            </tr>
+          `;
+        })
+        .join("");
+
+      document.getElementById(
+        "mobile-ranking-list"
+      ).innerHTML = ranking
+        .map(result => {
+          const rankClass =
+            getRankClass(result.rank);
+
+          return `
+            <article
+              class="
+                ranking-item
+                place-${result.rank}
+              "
+            >
+              <span
+                class="rank-badge ${rankClass}"
+              >
+                ${result.rank}
+              </span>
+
+              <div class="mobile-player">
+                <div class="mobile-player-name">
+                  ${result.name}
+                </div>
+
+                <div class="mobile-details">
+                  <span class="points-badge">
+                    TS ${result.tsPoints}
+                  </span>
+
+                  <span class="points-badge red">
+                    MS ${result.msPoints}
+                  </span>
+
+                  <span>
+                    ${result.matchdayWins}
+                    Tagessieg${result.matchdayWins === 1 ? "" : "e"}
+                  </span>
+                </div>
+              </div>
+
+              <div class="mobile-total">
+                ${result.totalPoints}
+
+                <span class="mobile-total-label">
+                  Punkte
+                </span>
+              </div>
+            </article>
+          `;
+        })
+        .join("");
     }
 
     function renderMatchdayView() {
-      const matchday = appData.matchdays.find(
-        item =>
-          Number(item.matchday) ===
-          Number(selectedMatchday)
-      );
+      const matchday =
+        appData.matchdays.find(
+          item =>
+            Number(item.matchday) ===
+            Number(selectedMatchday)
+        );
 
       if (!matchday) {
         return;
       }
 
-      const results = matchday.results;
+      const results =
+        [...matchday.results].sort(
+          (a, b) => {
+            const rankDifference =
+              Number(a.matchday_rank) -
+              Number(b.matchday_rank);
 
-      const winnerNames = namesWithMaximum(
-        results,
-        result => result.matchday_points
-      );
+            if (rankDifference !== 0) {
+              return rankDifference;
+            }
 
-      const bestTs = namesWithMaximum(
-        results,
-        result => result.ts.points
-      );
+            return a.name.localeCompare(
+              b.name,
+              "de",
+              { sensitivity: "base" }
+            );
+          }
+        );
 
-      const bestMs = namesWithMaximum(
-        results,
-        result => result.ms.points
-      );
+      const winnerNames =
+        namesWithMaximum(
+          results,
+          result => result.matchday_points
+        );
 
-      document.getElementById("summary").innerHTML = [
+      const winnerPoints =
+        Math.max(
+          ...results.map(
+            result => result.matchday_points
+          )
+        );
+
+      const bestTs =
+        namesWithMaximum(
+          results,
+          result => result.ts.points
+        );
+
+      const bestMs =
+        namesWithMaximum(
+          results,
+          result => result.ms.points
+        );
+
+      document.getElementById(
+        "hero-label"
+      ).textContent = "Mann des Tages";
+
+      document.getElementById(
+        "hero-value"
+      ).textContent = winnerNames;
+
+      document.getElementById(
+        "hero-detail"
+      ).textContent =
+        `${winnerPoints} Punkte am ${matchday.matchday}. Spieltag`;
+
+      document.getElementById(
+        "summary"
+      ).innerHTML = [
         createSummaryCard(
           "Spieltag",
           matchday.matchday
         ),
         createSummaryCard(
-          "Tagessieger",
-          winnerNames
+          "Mann des Tages",
+          winnerNames,
+          "red"
         ),
         createSummaryCard(
-          "Bestes TS",
+          "Bestes Tippspiel",
           bestTs
         ),
         createSummaryCard(
-          "Bestes MS",
-          bestMs
+          "Bestes Managerspiel",
+          bestMs,
+          "red"
         )
       ].join("");
 
@@ -690,9 +1248,7 @@
         "ranking-title"
       ).textContent = "Spieltagswertung";
 
-      document.getElementById(
-        "ranking-label"
-      ).hidden = true;
+      rankingLabel.hidden = true;
 
       matchdaySelect.hidden = false;
       matchdaySelect.value =
@@ -713,51 +1269,108 @@
 
       document.getElementById(
         "ranking-body"
-      ).innerHTML = results.map(result => {
-        const rankClass =
-          Number(result.matchday_rank) === 1
-            ? "rank rank-1"
-            : "rank";
+      ).innerHTML = results
+        .map(result => {
+          const rankClass =
+            getRankClass(
+              result.matchday_rank
+            );
 
-        return `
-          <tr>
-            <td class="${rankClass}">
-              ${result.matchday_rank}
-            </td>
+          return `
+            <tr>
+              <td>
+                <span
+                  class="rank-badge ${rankClass}"
+                >
+                  ${result.matchday_rank}
+                </span>
+              </td>
 
-            <td class="player">
-              ${result.name}
-            </td>
+              <td class="player">
+                ${result.name}
+              </td>
 
-            <td>
-              <strong>${result.ts.points}</strong>
-            </td>
+              <td>
+                ${result.ts.points}
+              </td>
 
-            <td>
-              <strong>${result.ms.points}</strong>
-            </td>
+              <td>
+                ${result.ms.points}
+              </td>
 
-            <td class="total">
-              ${result.matchday_points}
-            </td>
+              <td class="total">
+                ${result.matchday_points}
+              </td>
 
-            <td class="raw">
-              TS ${result.ts.raw_points}
-              ·
-              MS ${result.ms.raw_points}
-            </td>
-          </tr>
-        `;
-      }).join("");
+              <td class="raw">
+                TS ${result.ts.raw_points}
+                ·
+                MS ${result.ms.raw_points}
+              </td>
+            </tr>
+          `;
+        })
+        .join("");
+
+      document.getElementById(
+        "mobile-ranking-list"
+      ).innerHTML = results
+        .map(result => {
+          const rankClass =
+            getRankClass(
+              result.matchday_rank
+            );
+
+          return `
+            <article
+              class="
+                ranking-item
+                place-${result.matchday_rank}
+              "
+            >
+              <span
+                class="rank-badge ${rankClass}"
+              >
+                ${result.matchday_rank}
+              </span>
+
+              <div class="mobile-player">
+                <div class="mobile-player-name">
+                  ${result.name}
+                </div>
+
+                <div class="mobile-details">
+                  <span class="points-badge">
+                    TS ${result.ts.points}
+                  </span>
+
+                  <span class="points-badge red">
+                    MS ${result.ms.points}
+                  </span>
+
+                  <span>
+                    Roh:
+                    ${result.ts.raw_points}
+                    /
+                    ${result.ms.raw_points}
+                  </span>
+                </div>
+              </div>
+
+              <div class="mobile-total">
+                ${result.matchday_points}
+
+                <span class="mobile-total-label">
+                  Punkte
+                </span>
+              </div>
+            </article>
+          `;
+        })
+        .join("");
     }
 
     async function loadData() {
-      const loading =
-        document.getElementById("loading");
-
-      const tableWrapper =
-        document.getElementById("table-wrapper");
-
       try {
         const response = await fetch(
           `data.json?timestamp=${Date.now()}`,
@@ -791,12 +1404,15 @@
           );
         }
 
-        latestMatchday = getLatestMatchday(
-          appData.matchdays
-        );
+        latestMatchday =
+          getLatestMatchday(
+            appData.matchdays
+          );
 
         if (
-          !Array.isArray(latestMatchday.results) ||
+          !Array.isArray(
+            latestMatchday.results
+          ) ||
           latestMatchday.results.length !== 9
         ) {
           throw new Error(
@@ -811,7 +1427,8 @@
         renderActiveView();
 
         loading.hidden = true;
-        tableWrapper.hidden = false;
+        desktopRanking.hidden = false;
+        mobileRanking.hidden = false;
 
         document.getElementById(
           "footer"
@@ -829,15 +1446,21 @@
 
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker
-       .register("service-worker.js", {
-          updateViaCache: "none"
-       })
-        .then(registration => registration.update())
+        .register(
+          "service-worker.js",
+          {
+            updateViaCache: "none"
+          }
+        )
+        .then(
+          registration =>
+            registration.update()
+        )
         .catch(error => {
-         console.error(
+          console.error(
             "Service Worker konnte nicht registriert werden:",
-           error
-         );
+            error
+          );
         });
     }
 
