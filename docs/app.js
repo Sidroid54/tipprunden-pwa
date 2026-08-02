@@ -34,6 +34,9 @@ const matchdayControls =
 const matchdaySelect =
   document.getElementById("matchday-select");
 
+const matchdaySelectControl =
+  document.getElementById("matchday-select-control");
+
 const matchdayModeTabs =
   document.getElementById("matchday-mode-tabs");
 
@@ -43,11 +46,11 @@ const matchdayModeButtons =
 const seasonMatchdaySelect =
   document.getElementById("season-matchday-select");
 
+const seasonControls =
+  document.getElementById("season-controls");
+
 const hero =
   document.getElementById("hero");
-
-const summary =
-  document.getElementById("summary");
 
 const rankingHeading =
   document.getElementById("ranking-heading");
@@ -167,26 +170,6 @@ function setView(view) {
   );
 
   renderActiveView();
-}
-
-function createSummaryCard(
-  label,
-  value,
-  accent = "navy"
-) {
-  return `
-    <article
-      class="card summary-card ${accent}-accent"
-    >
-      <div class="summary-label">
-        ${label}
-      </div>
-
-      <div class="summary-value">
-        ${value}
-      </div>
-    </article>
-  `;
 }
 
 function getSortedMatchdayNumbers() {
@@ -552,10 +535,11 @@ function renderActiveView() {
 }
 
 function renderSeasonView() {
-  matchdayControls.hidden = true;
+  matchdayControls.hidden = false;
+  matchdaySelectControl.hidden = true;
+  seasonControls.hidden = false;
   matchdayModeTabs.hidden = false;
   hero.hidden = true;
-  summary.hidden = true;
   rankingHeading.hidden = false;
 
   seasonMatchdaySelect.value =
@@ -571,13 +555,15 @@ function renderSeasonView() {
       title: "Tippspielwertung",
       rawField: "tsRawPoints",
       pointsField: "tsPoints",
-      pointsLabel: "TS-Punkte"
+      pointsLabel: "TS-Punkte",
+      badgeClass: "ts"
     },
     manager: {
       title: "Managerspielwertung",
       rawField: "msRawPoints",
       pointsField: "msPoints",
-      pointsLabel: "MS-Punkte"
+      pointsLabel: "MS-Punkte",
+      badgeClass: "ms"
     }
   }[activeMatchdayMode];
 
@@ -645,10 +631,10 @@ function renderSeasonView() {
 
             ${modeConfig
               ? `
-                <td class="competition-metric">
+                <td class="competition-primary">
                   ${result[modeConfig.rawField]}
                 </td>
-                <td class="competition-metric">
+                <td class="competition-secondary">
                   ${result[modeConfig.pointsField]}
                 </td>
                 <td>
@@ -695,7 +681,6 @@ function renderSeasonView() {
             class="
               ranking-item
               place-${result.rank}
-              ${modeConfig ? "competition-ranking-item" : ""}
               ${selectedClass}
             "
           >
@@ -713,19 +698,11 @@ function renderSeasonView() {
 
               ${modeConfig
                 ? `
-                  <div class="mobile-competition-metrics">
-                    <div class="mobile-competition-metric">
-                      <strong>${result[modeConfig.rawField]}</strong>
-                      <span>Rohpunkte</span>
-                    </div>
-                    <div class="mobile-competition-metric">
-                      <strong>${result[modeConfig.pointsField]}</strong>
-                      <span>${modeConfig.pointsLabel}</span>
-                    </div>
-                  </div>
-
-                  <div class="mobile-competition-trend">
-                    Trend ${getTrendMarkup(result.trend)}
+                  <div class="mobile-details">
+                    <span class="points-badge ${modeConfig.badgeClass}">
+                      ${modeConfig.pointsLabel}
+                      ${result[modeConfig.pointsField]}
+                    </span>
                   </div>
                 `
                 : `
@@ -747,7 +724,19 @@ function renderSeasonView() {
             </div>
 
             ${modeConfig
-              ? ""
+              ? `
+                <div class="mobile-total">
+                  ${result[modeConfig.rawField]}
+
+                  <span class="mobile-total-label">
+                    Punkte
+                  </span>
+
+                  <div class="mobile-trend">
+                    ${getTrendMarkup(result.trend)}
+                  </div>
+                </div>
+              `
               : `
                 <div class="mobile-total">
                   ${result.totalPoints}
@@ -769,9 +758,10 @@ function renderSeasonView() {
 
 function renderMatchdayView() {
   matchdayControls.hidden = false;
+  matchdaySelectControl.hidden = false;
+  seasonControls.hidden = true;
   matchdayModeTabs.hidden = false;
   hero.hidden = false;
-  summary.hidden = activeMatchdayMode !== "combined";
   rankingHeading.hidden = true;
 
   const matchday =
@@ -856,35 +846,6 @@ function renderMatchdayView() {
     "hero-value"
   ).textContent = winnerNames;
 
-  if (activeMatchdayMode === "combined") {
-    const bestTs =
-      namesWithMaximum(
-        results,
-        result => result.ts.points,
-        " & "
-      );
-
-    const bestMs =
-      namesWithMaximum(
-        results,
-        result => result.ms.points,
-        " & "
-      );
-
-    summary.innerHTML = [
-      createSummaryCard(
-        "Bestes Tippspiel",
-        bestTs,
-        "red"
-      ),
-      createSummaryCard(
-        "Bestes Managerspiel",
-        bestMs,
-        "navy"
-      )
-    ].join("");
-  }
-
   document.getElementById(
     "ranking-head"
   ).innerHTML = activeMatchdayMode === "combined"
@@ -948,10 +909,10 @@ function renderMatchdayView() {
                 <td class="total">${result.matchday_points}</td>
               `
               : `
-                <td class="competition-metric">
+                <td class="competition-primary">
                   ${modeConfig.rawPoints(result)}
                 </td>
-                <td class="competition-metric">
+                <td class="competition-secondary">
                   ${modeConfig.points(result)}
                 </td>
               `}
@@ -981,9 +942,6 @@ function renderMatchdayView() {
             class="
               ranking-item
               place-${resultRank}
-              ${activeMatchdayMode === "combined"
-                ? ""
-                : "competition-ranking-item"}
               ${selectedClass}
             "
           >
@@ -1012,15 +970,13 @@ function renderMatchdayView() {
                   </div>
                 `
                 : `
-                  <div class="mobile-competition-metrics">
-                    <div class="mobile-competition-metric">
-                      <strong>${modeConfig.rawPoints(result)}</strong>
-                      <span>Rohpunkte</span>
-                    </div>
-                    <div class="mobile-competition-metric">
-                      <strong>${modeConfig.points(result)}</strong>
-                      <span>${modeConfig.pointsLabel}</span>
-                    </div>
+                  <div class="mobile-details">
+                    <span class="points-badge ${activeMatchdayMode === "tips"
+                      ? "ts"
+                      : "ms"}">
+                      ${modeConfig.pointsLabel}
+                      ${modeConfig.points(result)}
+                    </span>
                   </div>
                 `}
             </div>
@@ -1035,7 +991,15 @@ function renderMatchdayView() {
                   </span>
                 </div>
               `
-              : ""}
+              : `
+                <div class="mobile-total">
+                  ${modeConfig.rawPoints(result)}
+
+                  <span class="mobile-total-label">
+                    Punkte
+                  </span>
+                </div>
+              `}
           </article>
         `;
       })

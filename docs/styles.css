@@ -208,8 +208,7 @@ main {
   outline-offset: 2px;
 }
 
-.matchday-controls label,
-.season-controls label {
+.selection-control label {
   display: block;
   margin-bottom: 7px;
   color: var(--muted);
@@ -296,48 +295,11 @@ main {
   line-height: 1.1;
 }
 
-.summary-grid {
-  display: grid;
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
-  gap: 10px;
-  margin-bottom: 18px;
-}
-
 .card {
   border: 1px solid var(--border);
   border-radius: 18px;
   background: var(--surface);
   box-shadow: var(--shadow);
-}
-
-.summary-card {
-  min-width: 0;
-  padding: 15px;
-}
-
-.summary-label {
-  color: var(--muted);
-  font-size: 0.7rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.summary-value {
-  margin-top: 6px;
-  overflow-wrap: anywhere;
-  color: var(--navy);
-  font-size: 1.18rem;
-  font-weight: 850;
-}
-
-.summary-card.red-accent {
-  border-top: 4px solid var(--red);
-}
-
-.summary-card.navy-accent {
-  border-top: 4px solid var(--navy);
 }
 
 .ranking-card {
@@ -359,10 +321,6 @@ main {
   flex-direction: column;
   align-items: flex-start;
   gap: 13px;
-}
-
-.season-controls {
-  width: min(100%, 280px);
 }
 
 .table-wrapper {
@@ -520,10 +478,16 @@ tbody tr.is-me .player {
   font-size: 0.82rem;
 }
 
-.competition-metric {
+.competition-primary {
+  color: var(--red-dark);
+  font-size: 1.05rem;
+  font-weight: 900;
+}
+
+.competition-secondary {
   color: var(--navy);
-  font-size: 1rem;
-  font-weight: 850;
+  font-size: 0.88rem;
+  font-weight: 800;
 }
 
 .trend {
@@ -678,47 +642,6 @@ tbody tr.is-me .player {
   margin-top: 6px;
   color: var(--muted);
   font-size: 0.74rem;
-}
-
-.ranking-item.competition-ranking-item {
-  grid-template-columns: 42px minmax(0, 1fr);
-}
-
-.mobile-competition-metrics {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 7px;
-  margin-top: 9px;
-}
-
-.mobile-competition-metric {
-  display: grid;
-  gap: 1px;
-  padding: 7px 9px;
-  border-radius: 9px;
-  background: var(--navy-soft);
-  text-align: center;
-}
-
-.mobile-competition-metric strong {
-  color: var(--navy);
-  font-size: 1.05rem;
-  font-weight: 900;
-}
-
-.mobile-competition-metric span {
-  color: var(--muted);
-  font-size: 0.66rem;
-  font-weight: 750;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-}
-
-.mobile-competition-trend {
-  margin-top: 7px;
-  color: var(--muted);
-  font-size: 0.72rem;
-  text-align: right;
 }
 
 .points-badge {
@@ -890,10 +813,6 @@ footer {
     padding-left: 10px;
   }
 
-  .season-controls {
-    width: 100%;
-  }
-
   .desktop-ranking {
     display: none;
   }
@@ -923,10 +842,6 @@ footer {
     padding-top: 24px;
   }
 
-  .summary-grid {
-    gap: 14px;
-  }
-
   .matchday-controls {
     display: flex;
     align-items: center;
@@ -934,11 +849,19 @@ footer {
     gap: 18px;
   }
 
-  .matchday-controls label {
+  .matchday-controls .selection-control {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    width: 100%;
+  }
+
+  .selection-control label {
     margin-bottom: 0;
   }
 
-  .matchday-controls .matchday-select {
+  .selection-control select {
     width: min(100%, 280px);
   }
 }

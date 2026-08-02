@@ -79,15 +79,36 @@
       class="matchday-controls"
       hidden
     >
-      <label for="matchday-select">
-        Spieltag auswählen
-      </label>
+      <div
+        id="matchday-select-control"
+        class="selection-control"
+      >
+        <label for="matchday-select">
+          Spieltag auswählen
+        </label>
 
-      <select
-        id="matchday-select"
-        class="matchday-select"
-        aria-label="Spieltag auswählen"
-      ></select>
+        <select
+          id="matchday-select"
+          class="matchday-select"
+          aria-label="Spieltag auswählen"
+        ></select>
+      </div>
+
+      <div
+        id="season-controls"
+        class="selection-control"
+        hidden
+      >
+        <label for="season-matchday-select">
+          Stand nach Spieltag
+        </label>
+
+        <select
+          id="season-matchday-select"
+          class="season-matchday-select"
+          aria-label="Spieltag der Gesamtwertung auswählen"
+        ></select>
+      </div>
     </div>
 
     <nav
@@ -144,12 +165,6 @@
       </div>
     </section>
 
-    <div
-      id="summary"
-      class="summary-grid"
-      hidden
-    ></div>
-
     <section class="card ranking-card">
       <div
         id="ranking-heading"
@@ -159,21 +174,6 @@
           <h2 id="ranking-title">
             Gesamtwertung
           </h2>
-
-          <div
-            id="season-controls"
-            class="season-controls"
-          >
-            <label for="season-matchday-select">
-              Stand nach
-            </label>
-
-            <select
-              id="season-matchday-select"
-              class="season-matchday-select"
-              aria-label="Spieltag der Gesamtwertung auswählen"
-            ></select>
-          </div>
         </div>
       </div>
 

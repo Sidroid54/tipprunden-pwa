@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "tasmania-hackentrick-";
-const CACHE_NAME = `${CACHE_PREFIX}v8`;
+const CACHE_NAME = `${CACHE_PREFIX}v11`;
 
 const APP_SHELL = [
   "./index.html",

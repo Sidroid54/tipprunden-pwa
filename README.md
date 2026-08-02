@@ -11,7 +11,7 @@ gemeinsamen Spieltags- und Saisonwertung.
 - Spieltagsrangliste mit Mann des Tages
 - separate Saison- und Spieltagsranglisten für Gesamt-, Tipp- und
   Managerspielwertung
-- gleichwertige Darstellung von Roh- und Wertungspunkten in den
+- Rohpunkte als führende Punktzahl und separate TS-/MS-Wertungspunkte in den
   Einzelwettbewerben
 - Saison-Gesamtwertung mit TS-, MS- und Gesamtpunkten
 - Anzeige von Tagessiegen und Rangtrends
