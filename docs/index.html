@@ -90,6 +90,40 @@
       ></select>
     </div>
 
+    <nav
+      id="matchday-mode-tabs"
+      class="matchday-mode-tabs"
+      aria-label="Spieltagswertung auswählen"
+      hidden
+    >
+      <button
+        class="matchday-mode-button active"
+        type="button"
+        data-matchday-mode="combined"
+        aria-pressed="true"
+      >
+        Gesamt
+      </button>
+
+      <button
+        class="matchday-mode-button"
+        type="button"
+        data-matchday-mode="tips"
+        aria-pressed="false"
+      >
+        Tippspiel
+      </button>
+
+      <button
+        class="matchday-mode-button"
+        type="button"
+        data-matchday-mode="manager"
+        aria-pressed="false"
+      >
+        Managerspiel
+      </button>
+    </nav>
+
     <section
       id="hero"
       class="hero-card"

@@ -173,6 +173,41 @@ main {
   box-shadow: var(--shadow);
 }
 
+.matchday-mode-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  margin-bottom: 14px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--white);
+  box-shadow: var(--shadow);
+}
+
+.matchday-mode-button {
+  min-width: 0;
+  min-height: 42px;
+  padding: 8px 6px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
+  font-size: clamp(0.78rem, 3vw, 0.9rem);
+  font-weight: 800;
+}
+
+.matchday-mode-button.active {
+  background: var(--navy);
+  color: var(--white);
+  box-shadow: 0 3px 10px rgb(11 31 58 / 20%);
+}
+
+.matchday-mode-button:focus-visible {
+  outline: 3px solid rgb(200 29 37 / 25%);
+  outline-offset: 2px;
+}
+
 .matchday-controls label,
 .season-controls label {
   display: block;

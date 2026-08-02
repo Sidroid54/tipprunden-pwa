@@ -10,6 +10,7 @@ let selectedMatchday = null;
 let selectedSeasonMatchday = null;
 let selectedPlayer = null;
 let activeView = "season";
+let activeMatchdayMode = "combined";
 
 function updateConnectionStatus() {
   const baseStatus =
@@ -32,6 +33,12 @@ const matchdayControls =
 
 const matchdaySelect =
   document.getElementById("matchday-select");
+
+const matchdayModeTabs =
+  document.getElementById("matchday-mode-tabs");
+
+const matchdayModeButtons =
+  [...document.querySelectorAll("[data-matchday-mode]")];
 
 const seasonMatchdaySelect =
   document.getElementById("season-matchday-select");
@@ -86,6 +93,22 @@ matchdaySelect.addEventListener(
     renderMatchdayView();
   }
 );
+
+for (const button of matchdayModeButtons) {
+  button.addEventListener("click", () => {
+    activeMatchdayMode = button.dataset.matchdayMode;
+
+    for (const modeButton of matchdayModeButtons) {
+      const isActive =
+        modeButton.dataset.matchdayMode === activeMatchdayMode;
+
+      modeButton.classList.toggle("active", isActive);
+      modeButton.setAttribute("aria-pressed", String(isActive));
+    }
+
+    renderMatchdayView();
+  });
+}
 
 seasonMatchdaySelect.addEventListener(
   "change",
@@ -515,6 +538,7 @@ function renderActiveView() {
 
 function renderSeasonView() {
   matchdayControls.hidden = true;
+  matchdayModeTabs.hidden = true;
   hero.hidden = true;
   summary.hidden = true;
   rankingHeading.hidden = false;
@@ -673,8 +697,9 @@ function renderSeasonView() {
 
 function renderMatchdayView() {
   matchdayControls.hidden = false;
+  matchdayModeTabs.hidden = false;
   hero.hidden = false;
-  summary.hidden = false;
+  summary.hidden = activeMatchdayMode !== "combined";
   rankingHeading.hidden = true;
 
   const matchday =
@@ -691,15 +716,49 @@ function renderMatchdayView() {
   matchdaySelect.value =
     String(matchday.matchday);
 
+  const modeConfig = {
+    combined: {
+      heroLabel: "Mann des Tages",
+      rank: result => result.matchday_rank,
+      rawPoints: null,
+      points: result => result.matchday_points,
+      pointsLabel: "Punkte"
+    },
+    tips: {
+      heroLabel: "Bester Tipper",
+      rank: result => result.ts.rank,
+      rawPoints: result => result.ts.raw_points,
+      points: result => result.ts.points,
+      pointsLabel: "TS-Punkte"
+    },
+    manager: {
+      heroLabel: "Bester Manager",
+      rank: result => result.ms.rank,
+      rawPoints: result => result.ms.raw_points,
+      points: result => result.ms.points,
+      pointsLabel: "MS-Punkte"
+    }
+  }[activeMatchdayMode];
+
   const results =
     [...matchday.results].sort(
       (a, b) => {
         const rankDifference =
-          Number(a.matchday_rank) -
-          Number(b.matchday_rank);
+          Number(modeConfig.rank(a)) -
+          Number(modeConfig.rank(b));
 
         if (rankDifference !== 0) {
           return rankDifference;
+        }
+
+        if (modeConfig.rawPoints) {
+          const rawDifference =
+            Number(modeConfig.rawPoints(b)) -
+            Number(modeConfig.rawPoints(a));
+
+          if (rawDifference !== 0) {
+            return rawDifference;
+          }
         }
 
         return a.name.localeCompare(
@@ -713,75 +772,82 @@ function renderMatchdayView() {
   const winnerNames =
     namesWithMaximum(
       results,
-      result =>
-        result.matchday_points,
-      " & "
-    );
-
-  const bestTs =
-    namesWithMaximum(
-      results,
-      result =>
-        result.ts.points,
-      " & "
-    );
-
-  const bestMs =
-    namesWithMaximum(
-      results,
-      result =>
-        result.ms.points,
+      result => modeConfig.points(result),
       " & "
     );
 
   document.getElementById(
     "hero-label"
-  ).textContent = "Mann des Tages";
+  ).textContent = modeConfig.heroLabel;
 
   document.getElementById(
     "hero-value"
   ).textContent = winnerNames;
 
-  summary.innerHTML = [
-    createSummaryCard(
-      "Bestes Tippspiel",
-      bestTs,
-      "red"
-    ),
-    createSummaryCard(
-      "Bestes Managerspiel",
-      bestMs,
-      "navy"
-    )
-  ].join("");
+  if (activeMatchdayMode === "combined") {
+    const bestTs =
+      namesWithMaximum(
+        results,
+        result => result.ts.points,
+        " & "
+      );
+
+    const bestMs =
+      namesWithMaximum(
+        results,
+        result => result.ms.points,
+        " & "
+      );
+
+    summary.innerHTML = [
+      createSummaryCard(
+        "Bestes Tippspiel",
+        bestTs,
+        "red"
+      ),
+      createSummaryCard(
+        "Bestes Managerspiel",
+        bestMs,
+        "navy"
+      )
+    ].join("");
+  }
 
   document.getElementById(
     "ranking-head"
-  ).innerHTML = `
-    <tr>
-      <th>Rang</th>
-      <th>Spieler</th>
-      <th>TS</th>
-      <th>MS</th>
-      <th>Gesamt</th>
-      <th>Rohpunkte</th>
-    </tr>
-  `;
+  ).innerHTML = activeMatchdayMode === "combined"
+    ? `
+      <tr>
+        <th>Rang</th>
+        <th>Spieler</th>
+        <th>TS</th>
+        <th>MS</th>
+        <th>Gesamt</th>
+        <th>Rohpunkte</th>
+      </tr>
+    `
+    : `
+      <tr>
+        <th>Rang</th>
+        <th>Spieler</th>
+        <th>Rohpunkte</th>
+        <th>${modeConfig.pointsLabel}</th>
+      </tr>
+    `;
 
   document.getElementById(
     "ranking-body"
   ).innerHTML =
     results
       .map(result => {
+        const resultRank =
+          modeConfig.rank(result);
+
         const rankClass =
-          getRankClass(
-            result.matchday_rank
-          );
+          getRankClass(resultRank);
 
         const rowClasses = [
-          getPodiumRowClass(
-            result.matchday_rank
-          ),
+          getPodiumRowClass(resultRank),
           isSelectedPlayer(result.name)
             ? "is-me"
             : ""
@@ -795,7 +861,7 @@ function renderMatchdayView() {
               <span
                 class="rank-badge ${rankClass}"
               >
-                ${result.matchday_rank}
+                ${resultRank}
               </span>
             </td>
 
@@ -804,23 +870,25 @@ function renderMatchdayView() {
               ${getYouBadge(result.name)}
             </td>
 
-            <td class="ts-value">
-              ${result.ts.points}
-            </td>
-
-            <td class="ms-value">
-              ${result.ms.points}
-            </td>
-
-            <td class="total">
-              ${result.matchday_points}
-            </td>
-
-            <td class="raw">
-              TS ${result.ts.raw_points}
-              ·
-              MS ${result.ms.raw_points}
-            </td>
+            ${activeMatchdayMode === "combined"
+              ? `
+                <td class="ts-value">${result.ts.points}</td>
+                <td class="ms-value">${result.ms.points}</td>
+                <td class="total">${result.matchday_points}</td>
+                <td class="raw">
+                  TS ${result.ts.raw_points}
+                  ·
+                  MS ${result.ms.raw_points}
+                </td>
+              `
+              : `
+                <td class="raw">
+                  ${modeConfig.rawPoints(result)}
+                </td>
+                <td class="total">
+                  ${modeConfig.points(result)}
+                </td>
+              `}
           </tr>
         `;
       })
@@ -831,10 +899,11 @@ function renderMatchdayView() {
   ).innerHTML =
     results
       .map(result => {
+        const resultRank =
+          modeConfig.rank(result);
+
         const rankClass =
-          getRankClass(
-            result.matchday_rank
-          );
+          getRankClass(resultRank);
 
         const selectedClass =
           isSelectedPlayer(result.name)
@@ -845,14 +914,14 @@ function renderMatchdayView() {
           <article
             class="
               ranking-item
-              place-${result.matchday_rank}
+              place-${resultRank}
               ${selectedClass}
             "
           >
             <span
               class="rank-badge ${rankClass}"
             >
-              ${result.matchday_rank}
+              ${resultRank}
             </span>
 
             <div class="mobile-player">
@@ -862,28 +931,37 @@ function renderMatchdayView() {
               </div>
 
               <div class="mobile-details">
-                <span class="points-badge ts">
-                  TS ${result.ts.points}
-                </span>
+                ${activeMatchdayMode === "combined"
+                  ? `
+                    <span class="points-badge ts">
+                      TS ${result.ts.points}
+                    </span>
 
-                <span class="points-badge ms">
-                  MS ${result.ms.points}
-                </span>
+                    <span class="points-badge ms">
+                      MS ${result.ms.points}
+                    </span>
 
-                <span>
-                  Roh:
-                  ${result.ts.raw_points}
-                  /
-                  ${result.ms.raw_points}
-                </span>
+                    <span>
+                      Roh:
+                      ${result.ts.raw_points}
+                      /
+                      ${result.ms.raw_points}
+                    </span>
+                  `
+                  : `
+                    <span>
+                      ${modeConfig.rawPoints(result)}
+                      Rohpunkte
+                    </span>
+                  `}
               </div>
             </div>
 
             <div class="mobile-total">
-              ${result.matchday_points}
+              ${modeConfig.points(result)}
 
               <span class="mobile-total-label">
-                Punkte
+                ${modeConfig.pointsLabel}
               </span>
             </div>
           </article>
