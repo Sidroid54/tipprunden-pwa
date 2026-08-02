@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-import json
 import time
 import traceback
 from datetime import datetime
@@ -17,17 +16,20 @@ from combine_matchday import (
     save_combined_matchday,
     update_public_data,
 )
+from config import validate_matchday
+from file_utils import write_json_atomic
 
 
 BACKEND_DIR = Path(__file__).resolve().parent
 LOG_FILE = BACKEND_DIR / "data" / "batch_import_log.json"
+DIAGNOSTICS_DIR = BACKEND_DIR / "diagnostics"
 
 
 def import_kicker_matchday(
     page: Page,
     matchday: int,
-) -> Path:
-    """Ruft einen kicker-Spieltag ab und speichert dessen MS-Wertung."""
+) -> tuple[str, list[kicker.ScoredResult]]:
+    """Ruft einen kicker-Spieltag ab, ohne bestehende Dateien zu ändern."""
     source_url = kicker.build_url(matchday)
 
     print(f"  kicker: Öffne Spieltag {matchday} …")
@@ -72,18 +74,14 @@ def import_kicker_matchday(
         raw_results
     )
 
-    return kicker.save_result(
-        matchday=matchday,
-        source_url=source_url,
-        results=scored_results,
-    )
+    return source_url, scored_results
 
 
 def import_kicktipp_matchday(
     page: Page,
     matchday: int,
-) -> Path:
-    """Ruft einen Kicktipp-Spieltag ab und speichert dessen TS-Wertung."""
+) -> tuple[str, list[kicktipp.ScoredResult]]:
+    """Ruft einen Kicktipp-Spieltag ab, ohne bestehende Dateien zu ändern."""
     source_url = kicktipp.build_url(matchday)
 
     print(f"  Kicktipp: Öffne Spieltag {matchday} …")
@@ -106,11 +104,7 @@ def import_kicktipp_matchday(
         raw_results
     )
 
-    return kicktipp.save_result(
-        matchday=matchday,
-        source_url=source_url,
-        results=scored_results,
-    )
+    return source_url, scored_results
 
 
 def save_log(log_entries: list[dict[str, Any]]) -> None:
@@ -122,14 +116,34 @@ def save_log(log_entries: list[dict[str, Any]]) -> None:
         "entries": log_entries,
     }
 
-    LOG_FILE.write_text(
-        json.dumps(
-            payload,
-            ensure_ascii=False,
-            indent=2,
-        ),
-        encoding="utf-8",
-    )
+    write_json_atomic(LOG_FILE, payload)
+
+
+def save_diagnostics(
+    matchday: int,
+    pages: dict[str, Page],
+) -> list[Path]:
+    """Speichert bei Importfehlern Screenshots der beteiligten Seiten."""
+    DIAGNOSTICS_DIR.mkdir(parents=True, exist_ok=True)
+    timestamp = datetime.now().astimezone().strftime("%Y%m%d-%H%M%S")
+    saved_files: list[Path] = []
+
+    for source, page in pages.items():
+        output_file = (
+            DIAGNOSTICS_DIR
+            / f"matchday-{matchday:02d}-{source}-{timestamp}.png"
+        )
+
+        try:
+            page.screenshot(path=str(output_file), full_page=True)
+            saved_files.append(output_file)
+        except Exception as screenshot_error:
+            print(
+                f"  Diagnose-Screenshot für {source} fehlgeschlagen: "
+                f"{screenshot_error}"
+            )
+
+    return saved_files
 
 
 def create_context(
@@ -151,6 +165,16 @@ def main() -> None:
         description=(
             "Importiert mehrere Spieltage von kicker und Kicktipp."
         )
+    )
+
+    parser.add_argument(
+        "matchday",
+        nargs="?",
+        type=int,
+        help=(
+            "Ein einzelner Spieltag von 1 bis 34. "
+            "Alternativ --start und --end verwenden."
+        ),
     )
 
     parser.add_argument(
@@ -176,11 +200,20 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    if not 1 <= args.start <= 34:
-        parser.error("--start muss zwischen 1 und 34 liegen.")
+    if args.matchday is not None:
+        if args.start != 32 or args.end != 34:
+            parser.error(
+                "Spieltag nicht zusammen mit --start oder --end verwenden."
+            )
 
-    if not 1 <= args.end <= 34:
-        parser.error("--end muss zwischen 1 und 34 liegen.")
+        args.start = args.matchday
+        args.end = args.matchday
+
+    try:
+        validate_matchday(args.start)
+        validate_matchday(args.end)
+    except ValueError as error:
+        parser.error(str(error))
 
     if args.start > args.end:
         parser.error("--start darf nicht größer als --end sein.")
@@ -215,14 +248,23 @@ def main() -> None:
             started_at = datetime.now().astimezone()
 
             try:
-                kicker_file = import_kicker_matchday(
+                kicker_url, kicker_results = import_kicker_matchday(
                     kicker_page,
                     matchday,
                 )
 
-                kicktipp_file = import_kicktipp_matchday(
+                kicktipp_url, kicktipp_results = import_kicktipp_matchday(
                     kicktipp_page,
                     matchday,
+                )
+
+                # Beide Abrufe müssen erfolgreich sein, bevor Quelldateien
+                # ersetzt werden.
+                kicker_file = kicker.save_result(
+                    matchday, kicker_url, kicker_results
+                )
+                kicktipp_file = kicktipp.save_result(
+                    matchday, kicktipp_url, kicktipp_results
                 )
 
                 combined_payload = combine_matchday(matchday)
@@ -264,6 +306,16 @@ def main() -> None:
 
                 traceback.print_exc()
 
+                diagnostic_files = save_diagnostics(
+                    matchday,
+                    {"kicker": kicker_page, "kicktipp": kicktipp_page},
+                )
+
+                if diagnostic_files:
+                    print("  Diagnose gespeichert:")
+                    for diagnostic_file in diagnostic_files:
+                        print(f"    {diagnostic_file}")
+
                 log_entries.append(
                     {
                         "matchday": matchday,
@@ -275,6 +327,9 @@ def main() -> None:
                             .isoformat()
                         ),
                         "error": str(error),
+                        "diagnostics": [
+                            str(path) for path in diagnostic_files
+                        ],
                     }
                 )
 

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import json
+import argparse
 import re
 from datetime import datetime
 from pathlib import Path
@@ -8,37 +8,18 @@ from typing import TypedDict
 
 from playwright.sync_api import Locator, sync_playwright
 
+from config import (
+    KICKTIPP_NAMES,
+    KICKTIPP_SEASON_ID as TIPPSAISON_ID,
+    RANKING_POINTS,
+    validate_matchday,
+)
+from file_utils import write_json_atomic
+
 
 BACKEND_DIR = Path(__file__).resolve().parent
 AUTH_FILE = BACKEND_DIR / "secrets" / "kicktipp-auth.json"
 OUTPUT_DIR = BACKEND_DIR / "data"
-
-TIPPSAISON_ID = "3923606"
-
-KICKTIPP_NAMES = {
-    "Daniel": "Daniel",
-    "Tim": "Tim",
-    "Marcus": "Marcus",
-    "Simon": "Simon",
-    "Björn": "Björn",
-    "Alex": "Alex",
-    "KAIANO": "Kai",
-    "AllezEffzeh": "Jan",
-    "Luitpold": "Marius",
-}
-
-RANKING_POINTS = {
-    1: 10,
-    2: 8,
-    3: 7,
-    4: 6,
-    5: 5,
-    6: 4,
-    7: 3,
-    8: 2,
-    9: 1,
-}
-
 
 class RawResult(TypedDict):
     name: str
@@ -113,10 +94,20 @@ def validate_results(results: list[RawResult]) -> None:
     actual_names = {result["name"] for result in results}
 
     missing_names = expected_names - actual_names
+    duplicate_names = sorted(
+        name
+        for name in actual_names
+        if sum(result["name"] == name for result in results) > 1
+    )
 
     if len(results) != 9:
         raise ValueError(
             f"Es wurden {len(results)} statt 9 Ergebnisse erkannt."
+        )
+
+    if duplicate_names:
+        raise ValueError(
+            "Teilnehmer doppelt erkannt: " + ", ".join(duplicate_names)
         )
 
     if missing_names:
@@ -179,20 +170,23 @@ def save_result(
         "results": results,
     }
 
-    output_file.write_text(
-        json.dumps(
-            payload,
-            ensure_ascii=False,
-            indent=2,
-        ),
-        encoding="utf-8",
-    )
+    write_json_atomic(output_file, payload)
 
     return output_file
 
 
 def main() -> None:
-    matchday = 33
+    parser = argparse.ArgumentParser(
+        description="Importiert einen Kicktipp-Spieltag."
+    )
+    parser.add_argument("matchday", type=int, help="Spieltag von 1 bis 34.")
+    args = parser.parse_args()
+
+    try:
+        matchday = validate_matchday(args.matchday)
+    except ValueError as error:
+        parser.error(str(error))
+
     source_url = build_url(matchday)
 
     if not AUTH_FILE.exists():

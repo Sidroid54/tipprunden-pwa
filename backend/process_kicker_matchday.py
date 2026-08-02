@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import json
+import argparse
 import re
 from datetime import datetime
 from pathlib import Path
@@ -8,41 +8,20 @@ from typing import TypedDict
 
 from playwright.sync_api import Locator, sync_playwright
 
+from config import (
+    KICKER_GROUP_ID as GROUP_ID,
+    KICKER_NAMES,
+    KICKER_ROUND_PREFIX as ROUND_PREFIX,
+    KICKER_SEASON_ID as SEASON_ID,
+    RANKING_POINTS,
+    validate_matchday,
+)
+from file_utils import write_json_atomic
+
 
 BACKEND_DIR = Path(__file__).resolve().parent
 AUTH_FILE = BACKEND_DIR / "secrets" / "kicker-auth.json"
 OUTPUT_DIR = BACKEND_DIR / "data"
-
-SEASON_ID = "se-k00012025"
-ROUND_PREFIX = "rn-k00012025"
-GROUP_ID = "010000000000000000000711"
-
-# Deine Zuordnung der kicker-Namen zu den Namen in unserer App.
-KICKER_NAMES = {
-    "Simon Owald": "Simon",
-    "Jan Horstmann": "Jan",
-    "Daniel Sinzig": "Daniel",
-    "Luitpold": "Marius",
-    "KAIANO": "Kai",
-    "Tim Roth": "Tim",
-    "Marcus Vanselow": "Marcus",
-    "björn wagner": "Björn",
-    "Alexander Neubauer": "Alex",
-}
-
-# Punkte nach Rang.
-RANKING_POINTS = {
-    1: 10,
-    2: 8,
-    3: 7,
-    4: 6,
-    5: 5,
-    6: 4,
-    7: 3,
-    8: 2,
-    9: 1,
-}
-
 
 class RawResult(TypedDict):
     name: str
@@ -171,10 +150,20 @@ def validate_results(results: list[RawResult]) -> None:
 
     missing_names = expected_names - actual_names
     unexpected_names = actual_names - expected_names
+    duplicate_names = sorted(
+        name
+        for name in actual_names
+        if sum(result["name"] == name for result in results) > 1
+    )
 
     if len(results) != 9:
         raise ValueError(
             f"Es wurden {len(results)} statt 9 Ergebnisse erkannt."
+        )
+
+    if duplicate_names:
+        raise ValueError(
+            "Teilnehmer doppelt erkannt: " + ", ".join(duplicate_names)
         )
 
     if missing_names:
@@ -210,20 +199,23 @@ def save_result(
         "results": results,
     }
 
-    output_file.write_text(
-        json.dumps(
-            payload,
-            ensure_ascii=False,
-            indent=2,
-        ),
-        encoding="utf-8",
-    )
+    write_json_atomic(output_file, payload)
 
     return output_file
 
 
 def main() -> None:
-    matchday = 33
+    parser = argparse.ArgumentParser(
+        description="Importiert einen kicker-Managerspiel-Spieltag."
+    )
+    parser.add_argument("matchday", type=int, help="Spieltag von 1 bis 34.")
+    args = parser.parse_args()
+
+    try:
+        matchday = validate_matchday(args.matchday)
+    except ValueError as error:
+        parser.error(str(error))
+
     source_url = build_url(matchday)
 
     if not AUTH_FILE.exists():

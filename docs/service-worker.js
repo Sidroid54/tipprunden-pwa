@@ -1,13 +1,22 @@
-const CACHE_NAME = "tasmania-hackentrick-v3";
+const CACHE_PREFIX = "tasmania-hackentrick-";
+const CACHE_NAME = `${CACHE_PREFIX}v4`;
 
-const STATIC_FILES = [
-  "./manifest.json"
+const APP_SHELL = [
+  "./index.html",
+  "./styles.css",
+  "./app.js",
+  "./manifest.json",
+  "./assets/logo-tasmania.png",
+  "./assets/icon-tasmania-192.png",
+  "./assets/icon-tasmania-512.png"
 ];
+
+const INDEX_URL = new URL("./index.html", self.registration.scope).href;
+const DATA_URL = new URL("./data.json", self.registration.scope).href;
 
 self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(STATIC_FILES))
+    caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL))
   );
 
   self.skipWaiting();
@@ -18,7 +27,9 @@ self.addEventListener("activate", event => {
     caches.keys().then(cacheNames =>
       Promise.all(
         cacheNames
-          .filter(name => name !== CACHE_NAME)
+          .filter(
+            name => name.startsWith(CACHE_PREFIX) && name !== CACHE_NAME
+          )
           .map(name => caches.delete(name))
       )
     )
@@ -27,24 +38,69 @@ self.addEventListener("activate", event => {
   self.clients.claim();
 });
 
+async function loadLatestData(request) {
+  const cache = await caches.open(CACHE_NAME);
+
+  try {
+    const response = await fetch(request);
+
+    if (!response.ok) {
+      throw new Error(`data.json antwortet mit ${response.status}`);
+    }
+
+    await cache.put(DATA_URL, response.clone());
+    return response;
+  } catch (error) {
+    const cachedResponse = await cache.match(DATA_URL);
+
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+
+    throw error;
+  }
+}
+
+async function loadNavigation(request) {
+  try {
+    return await fetch(request);
+  } catch (error) {
+    const cachedResponse = await caches.match(INDEX_URL);
+
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+
+    throw error;
+  }
+}
+
 self.addEventListener("fetch", event => {
   const request = event.request;
-  const url = new URL(request.url);
 
-  // HTML-Seiten und data.json immer zuerst aus dem Netz laden.
-  if (
-    request.mode === "navigate" ||
-    url.pathname.endsWith("/index.html") ||
-    url.pathname.endsWith("/data.json")
-  ) {
-    event.respondWith(
-      fetch(request).catch(() => caches.match(request))
-    );
-
+  if (request.method !== "GET") {
     return;
   }
 
-  // Andere Dateien dürfen aus dem Cache kommen.
+  const url = new URL(request.url);
+
+  if (url.origin !== self.location.origin) {
+    return;
+  }
+
+  if (url.pathname.endsWith("/data.json")) {
+    event.respondWith(loadLatestData(request));
+    return;
+  }
+
+  if (
+    request.mode === "navigate" ||
+    url.pathname.endsWith("/index.html")
+  ) {
+    event.respondWith(loadNavigation(request));
+    return;
+  }
+
   event.respondWith(
     caches.match(request).then(cachedResponse => {
       return cachedResponse || fetch(request);

@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+import argparse
 import json
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+
+from config import PARTICIPANTS, RANKING_POINTS, validate_matchday
+from file_utils import write_json_atomic
 
 
 BACKEND_DIR = Path(__file__).resolve().parent
@@ -11,19 +15,6 @@ PROJECT_DIR = BACKEND_DIR.parent
 
 INPUT_DIR = BACKEND_DIR / "data"
 DOCS_DIR = PROJECT_DIR / "docs"
-
-PARTICIPANTS = [
-    "Björn",
-    "Jan",
-    "Marcus",
-    "Marius",
-    "Kai",
-    "Alex",
-    "Tim",
-    "Daniel",
-    "Simon",
-]
-
 
 def load_json(path: Path) -> dict[str, Any]:
     """Lädt eine JSON-Datei und prüft, ob sie existiert."""
@@ -201,6 +192,47 @@ def combine_matchday(matchday: int) -> dict[str, Any]:
     }
 
 
+def validate_combined_payload(payload: dict[str, Any]) -> None:
+    """Prüft eine kombinierte Wertung vor ihrer Veröffentlichung."""
+    matchday = payload.get("matchday")
+
+    if not isinstance(matchday, int):
+        raise ValueError("Die kombinierte Wertung enthält keinen Spieltag.")
+
+    validate_matchday(matchday)
+
+    results = payload.get("results")
+
+    if not isinstance(results, list):
+        raise ValueError("Die kombinierte Wertung enthält keine Ergebnisliste.")
+
+    indexed = results_by_name({"source": "kombiniert", "results": results})
+    validate_names("Kombinierte Wertung", indexed)
+    allowed_points = set(RANKING_POINTS.values())
+
+    for result in results:
+        name = result["name"]
+
+        try:
+            ts_points = int(result["ts"]["points"])
+            ms_points = int(result["ms"]["points"])
+            total = int(result["matchday_points"])
+            rank = int(result["matchday_rank"])
+        except (KeyError, TypeError, ValueError) as error:
+            raise ValueError(
+                f"Kombinierte Wertung ist bei {name} unvollständig."
+            ) from error
+
+        if ts_points not in allowed_points or ms_points not in allowed_points:
+            raise ValueError(f"Ungültige Wertungspunkte bei {name}.")
+
+        if total != ts_points + ms_points:
+            raise ValueError(f"Falsche Spieltagssumme bei {name}.")
+
+        if not 1 <= rank <= len(PARTICIPANTS):
+            raise ValueError(f"Ungültiger Spieltagsrang bei {name}.")
+
+
 def save_combined_matchday(
     matchday: int,
     payload: dict[str, Any],
@@ -210,10 +242,14 @@ def save_combined_matchday(
         INPUT_DIR / f"combined_matchday_{matchday:02d}.json"
     )
 
-    output_file.write_text(
-        json.dumps(payload, ensure_ascii=False, indent=2),
-        encoding="utf-8",
-    )
+    if payload.get("matchday") != matchday:
+        raise ValueError(
+            "Dateiname und Spieltag der kombinierten Wertung stimmen "
+            "nicht überein."
+        )
+
+    validate_combined_payload(payload)
+    write_json_atomic(output_file, payload)
 
     return output_file
 
@@ -227,6 +263,7 @@ def update_public_data(
     Bereits vorhandene Spieltage bleiben erhalten und der aktuelle
     Spieltag wird ergänzt oder ersetzt.
     """
+    validate_combined_payload(matchday_payload)
     DOCS_DIR.mkdir(parents=True, exist_ok=True)
     public_file = DOCS_DIR / "data.json"
 
@@ -260,6 +297,9 @@ def update_public_data(
         key=lambda item: int(item["matchday"])
     )
 
+    for stored_matchday in remaining_matchdays:
+        validate_combined_payload(stored_matchday)
+
     public_payload["app"] = "Tasmania Hackentrick"
     public_payload["participants"] = PARTICIPANTS
     public_payload["updated_at"] = (
@@ -267,14 +307,7 @@ def update_public_data(
     )
     public_payload["matchdays"] = remaining_matchdays
 
-    public_file.write_text(
-        json.dumps(
-            public_payload,
-            ensure_ascii=False,
-            indent=2,
-        ),
-        encoding="utf-8",
-    )
+    write_json_atomic(public_file, public_payload)
 
     return public_file
 
@@ -310,7 +343,17 @@ def print_table(payload: dict[str, Any]) -> None:
 
 
 def main() -> None:
-    matchday = 33
+    parser = argparse.ArgumentParser(
+        description="Kombiniert kicker und Kicktipp für einen Spieltag."
+    )
+    parser.add_argument("matchday", type=int, help="Spieltag von 1 bis 34.")
+    args = parser.parse_args()
+
+    try:
+        matchday = validate_matchday(args.matchday)
+    except ValueError as error:
+        parser.error(str(error))
+
 
     payload = combine_matchday(matchday)
     print_table(payload)

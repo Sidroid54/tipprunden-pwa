@@ -1,28 +1,20 @@
+import argparse
 from pathlib import Path
 import re
 
 from playwright.sync_api import sync_playwright
 
+from config import (
+    KICKER_GROUP_ID as GROUP_ID,
+    KICKER_NAMES,
+    KICKER_ROUND_PREFIX as ROUND_PREFIX,
+    KICKER_SEASON_ID as SEASON_ID,
+    validate_matchday,
+)
+
 
 BACKEND_DIR = Path(__file__).resolve().parent
 AUTH_FILE = BACKEND_DIR / "secrets" / "kicker-auth.json"
-
-KICKER_NAMES = {
-    "Simon Owald": "Simon",
-    "Jan Horstmann": "Jan",
-    "Daniel Sinzig": "Daniel",
-    "Luitpold": "Marius",
-    "KAIANO": "Kai",
-    "Tim Roth": "Tim",
-    "Marcus Vanselow": "Marcus",
-    "björn wagner": "Björn",
-    "Alexander Neubauer": "Alex",
-}
-
-SEASON_ID = "se-k00012025"
-ROUND_PREFIX = "rn-k00012025"
-GROUP_ID = "010000000000000000000711"
-
 
 def build_url(matchday: int) -> str:
     round_id = f"{ROUND_PREFIX}{matchday:04d}"
@@ -47,7 +39,17 @@ def parse_score(score_text: str) -> int:
 
 
 def main() -> None:
-    matchday = 33
+    parser = argparse.ArgumentParser(
+        description="Liest einen kicker-Spieltag zur Kontrolle aus."
+    )
+    parser.add_argument("matchday", type=int, help="Spieltag von 1 bis 34.")
+    args = parser.parse_args()
+
+    try:
+        matchday = validate_matchday(args.matchday)
+    except ValueError as error:
+        parser.error(str(error))
+
     url = build_url(matchday)
 
     if not AUTH_FILE.exists():

@@ -4,6 +4,9 @@ backend/.venv/
 # Gespeicherte Logins und Sitzungscookies
 backend/secrets/
 
+# Screenshots fehlgeschlagener Importe können private Daten enthalten
+backend/diagnostics/
+
 # Python-Zwischendateien
 backend/__pycache__/
 *.pyc
