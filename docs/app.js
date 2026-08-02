@@ -106,7 +106,7 @@ for (const button of matchdayModeButtons) {
       modeButton.setAttribute("aria-pressed", String(isActive));
     }
 
-    renderMatchdayView();
+    renderActiveView();
   });
 }
 
@@ -282,13 +282,16 @@ function assignCompetitionRanks(
 
 function calculateSeasonRanking(
   data,
-  maximumMatchday
+  maximumMatchday,
+  mode = "combined"
 ) {
   const totals = new Map();
 
   for (const name of data.participants) {
     totals.set(name, {
       name,
+      tsRawPoints: 0,
+      msRawPoints: 0,
       tsPoints: 0,
       msPoints: 0,
       totalPoints: 0,
@@ -315,8 +318,14 @@ function calculateSeasonRanking(
       participant.tsPoints +=
         Number(result.ts.points);
 
+      participant.tsRawPoints +=
+        Number(result.ts.raw_points);
+
       participant.msPoints +=
         Number(result.ms.points);
+
+      participant.msRawPoints +=
+        Number(result.ms.raw_points);
 
       participant.totalPoints +=
         Number(result.matchday_points);
@@ -331,7 +340,11 @@ function calculateSeasonRanking(
 
   return assignCompetitionRanks(
     [...totals.values()],
-    "totalPoints"
+    {
+      combined: "totalPoints",
+      tips: "tsPoints",
+      manager: "msPoints"
+    }[mode]
   );
 }
 
@@ -359,7 +372,8 @@ function getSeasonRankingWithTrend(
   const currentRanking =
     calculateSeasonRanking(
       appData,
-      selectedNumber
+      selectedNumber,
+      activeMatchdayMode
     );
 
   const previousNumber =
@@ -377,7 +391,8 @@ function getSeasonRankingWithTrend(
   const previousRanking =
     calculateSeasonRanking(
       appData,
-      previousNumber
+      previousNumber,
+      activeMatchdayMode
     );
 
   const previousRanks = new Map(
@@ -538,7 +553,7 @@ function renderActiveView() {
 
 function renderSeasonView() {
   matchdayControls.hidden = true;
-  matchdayModeTabs.hidden = true;
+  matchdayModeTabs.hidden = false;
   hero.hidden = true;
   summary.hidden = true;
   rankingHeading.hidden = false;
@@ -551,23 +566,50 @@ function renderSeasonView() {
       selectedSeasonMatchday
     );
 
+  const modeConfig = {
+    tips: {
+      title: "Tippspielwertung",
+      rawField: "tsRawPoints",
+      pointsField: "tsPoints",
+      pointsLabel: "TS-Punkte"
+    },
+    manager: {
+      title: "Managerspielwertung",
+      rawField: "msRawPoints",
+      pointsField: "msPoints",
+      pointsLabel: "MS-Punkte"
+    }
+  }[activeMatchdayMode];
+
   document.getElementById(
     "ranking-title"
-  ).textContent = "Gesamtwertung";
+  ).textContent = modeConfig
+    ? modeConfig.title
+    : "Gesamtwertung";
 
   document.getElementById(
     "ranking-head"
-  ).innerHTML = `
-    <tr>
-      <th>Rang</th>
-      <th>Spieler</th>
-      <th>TS</th>
-      <th>MS</th>
-      <th>Gesamt</th>
-      <th>Tagessiege</th>
-      <th>Trend</th>
-    </tr>
-  `;
+  ).innerHTML = modeConfig
+    ? `
+      <tr>
+        <th>Rang</th>
+        <th>Spieler</th>
+        <th>Rohpunkte</th>
+        <th>${modeConfig.pointsLabel}</th>
+        <th>Trend</th>
+      </tr>
+    `
+    : `
+      <tr>
+        <th>Rang</th>
+        <th>Spieler</th>
+        <th>TS</th>
+        <th>MS</th>
+        <th>Gesamt</th>
+        <th>Tagessiege</th>
+        <th>Trend</th>
+      </tr>
+    `;
 
   document.getElementById(
     "ranking-body"
@@ -601,25 +643,35 @@ function renderSeasonView() {
               ${getYouBadge(result.name)}
             </td>
 
-            <td class="ts-value">
-              ${result.tsPoints}
-            </td>
-
-            <td class="ms-value">
-              ${result.msPoints}
-            </td>
-
-            <td class="total">
-              ${result.totalPoints}
-            </td>
-
-            <td>
-              ${result.matchdayWins}
-            </td>
-
-            <td>
-              ${getTrendMarkup(result.trend)}
-            </td>
+            ${modeConfig
+              ? `
+                <td class="competition-metric">
+                  ${result[modeConfig.rawField]}
+                </td>
+                <td class="competition-metric">
+                  ${result[modeConfig.pointsField]}
+                </td>
+                <td>
+                  ${getTrendMarkup(result.trend)}
+                </td>
+              `
+              : `
+                <td class="ts-value">
+                  ${result.tsPoints}
+                </td>
+                <td class="ms-value">
+                  ${result.msPoints}
+                </td>
+                <td class="total">
+                  ${result.totalPoints}
+                </td>
+                <td>
+                  ${result.matchdayWins}
+                </td>
+                <td>
+                  ${getTrendMarkup(result.trend)}
+                </td>
+              `}
           </tr>
         `;
       })
@@ -643,6 +695,7 @@ function renderSeasonView() {
             class="
               ranking-item
               place-${result.rank}
+              ${modeConfig ? "competition-ranking-item" : ""}
               ${selectedClass}
             "
           >
@@ -658,37 +711,56 @@ function renderSeasonView() {
                 ${getYouBadge(result.name)}
               </div>
 
-              <div class="mobile-details">
-                <span class="points-badge ts">
-                  TS ${result.tsPoints}
-                </span>
+              ${modeConfig
+                ? `
+                  <div class="mobile-competition-metrics">
+                    <div class="mobile-competition-metric">
+                      <strong>${result[modeConfig.rawField]}</strong>
+                      <span>Rohpunkte</span>
+                    </div>
+                    <div class="mobile-competition-metric">
+                      <strong>${result[modeConfig.pointsField]}</strong>
+                      <span>${modeConfig.pointsLabel}</span>
+                    </div>
+                  </div>
 
-                <span class="points-badge ms">
-                  MS ${result.msPoints}
-                </span>
+                  <div class="mobile-competition-trend">
+                    Trend ${getTrendMarkup(result.trend)}
+                  </div>
+                `
+                : `
+                  <div class="mobile-details">
+                    <span class="points-badge ts">
+                      TS ${result.tsPoints}
+                    </span>
 
-                <span>
-                  ${result.matchdayWins}
-                  Tagessieg${
-                    result.matchdayWins === 1
-                      ? ""
-                      : "e"
-                  }
-                </span>
-              </div>
+                    <span class="points-badge ms">
+                      MS ${result.msPoints}
+                    </span>
+
+                    <span>
+                      ${result.matchdayWins}
+                      Tagessieg${result.matchdayWins === 1 ? "" : "e"}
+                    </span>
+                  </div>
+                `}
             </div>
 
-            <div class="mobile-total">
-              ${result.totalPoints}
+            ${modeConfig
+              ? ""
+              : `
+                <div class="mobile-total">
+                  ${result.totalPoints}
 
-              <span class="mobile-total-label">
-                Punkte
-              </span>
+                  <span class="mobile-total-label">
+                    Punkte
+                  </span>
 
-              <div class="mobile-trend">
-                ${getTrendMarkup(result.trend)}
-              </div>
-            </div>
+                  <div class="mobile-trend">
+                    ${getTrendMarkup(result.trend)}
+                  </div>
+                </div>
+              `}
           </article>
         `;
       })
@@ -823,7 +895,6 @@ function renderMatchdayView() {
         <th>TS</th>
         <th>MS</th>
         <th>Gesamt</th>
-        <th>Rohpunkte</th>
       </tr>
     `
     : `
@@ -875,17 +946,12 @@ function renderMatchdayView() {
                 <td class="ts-value">${result.ts.points}</td>
                 <td class="ms-value">${result.ms.points}</td>
                 <td class="total">${result.matchday_points}</td>
-                <td class="raw">
-                  TS ${result.ts.raw_points}
-                  ·
-                  MS ${result.ms.raw_points}
-                </td>
               `
               : `
-                <td class="raw">
+                <td class="competition-metric">
                   ${modeConfig.rawPoints(result)}
                 </td>
-                <td class="total">
+                <td class="competition-metric">
                   ${modeConfig.points(result)}
                 </td>
               `}
@@ -915,6 +981,9 @@ function renderMatchdayView() {
             class="
               ranking-item
               place-${resultRank}
+              ${activeMatchdayMode === "combined"
+                ? ""
+                : "competition-ranking-item"}
               ${selectedClass}
             "
           >
@@ -930,9 +999,9 @@ function renderMatchdayView() {
                 ${getYouBadge(result.name)}
               </div>
 
-              <div class="mobile-details">
-                ${activeMatchdayMode === "combined"
-                  ? `
+              ${activeMatchdayMode === "combined"
+                ? `
+                  <div class="mobile-details">
                     <span class="points-badge ts">
                       TS ${result.ts.points}
                     </span>
@@ -940,30 +1009,33 @@ function renderMatchdayView() {
                     <span class="points-badge ms">
                       MS ${result.ms.points}
                     </span>
-
-                    <span>
-                      Roh:
-                      ${result.ts.raw_points}
-                      /
-                      ${result.ms.raw_points}
-                    </span>
-                  `
-                  : `
-                    <span>
-                      ${modeConfig.rawPoints(result)}
-                      Rohpunkte
-                    </span>
-                  `}
-              </div>
+                  </div>
+                `
+                : `
+                  <div class="mobile-competition-metrics">
+                    <div class="mobile-competition-metric">
+                      <strong>${modeConfig.rawPoints(result)}</strong>
+                      <span>Rohpunkte</span>
+                    </div>
+                    <div class="mobile-competition-metric">
+                      <strong>${modeConfig.points(result)}</strong>
+                      <span>${modeConfig.pointsLabel}</span>
+                    </div>
+                  </div>
+                `}
             </div>
 
-            <div class="mobile-total">
-              ${modeConfig.points(result)}
+            ${activeMatchdayMode === "combined"
+              ? `
+                <div class="mobile-total">
+                  ${modeConfig.points(result)}
 
-              <span class="mobile-total-label">
-                ${modeConfig.pointsLabel}
-              </span>
-            </div>
+                  <span class="mobile-total-label">
+                    ${modeConfig.pointsLabel}
+                  </span>
+                </div>
+              `
+              : ""}
           </article>
         `;
       })

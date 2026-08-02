@@ -520,6 +520,12 @@ tbody tr.is-me .player {
   font-size: 0.82rem;
 }
 
+.competition-metric {
+  color: var(--navy);
+  font-size: 1rem;
+  font-weight: 850;
+}
+
 .trend {
   display: inline-flex;
   min-width: 44px;
@@ -672,6 +678,47 @@ tbody tr.is-me .player {
   margin-top: 6px;
   color: var(--muted);
   font-size: 0.74rem;
+}
+
+.ranking-item.competition-ranking-item {
+  grid-template-columns: 42px minmax(0, 1fr);
+}
+
+.mobile-competition-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+  margin-top: 9px;
+}
+
+.mobile-competition-metric {
+  display: grid;
+  gap: 1px;
+  padding: 7px 9px;
+  border-radius: 9px;
+  background: var(--navy-soft);
+  text-align: center;
+}
+
+.mobile-competition-metric strong {
+  color: var(--navy);
+  font-size: 1.05rem;
+  font-weight: 900;
+}
+
+.mobile-competition-metric span {
+  color: var(--muted);
+  font-size: 0.66rem;
+  font-weight: 750;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.mobile-competition-trend {
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  text-align: right;
 }
 
 .points-badge {

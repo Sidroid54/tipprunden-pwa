@@ -9,7 +9,10 @@ gemeinsamen Spieltags- und Saisonwertung.
 
 - gemeinsame Wertung aus Kicktipp und kicker Managerspiel
 - Spieltagsrangliste mit Mann des Tages
-- separate Spieltagsranglisten für Gesamt-, Tipp- und Managerspielwertung
+- separate Saison- und Spieltagsranglisten für Gesamt-, Tipp- und
+  Managerspielwertung
+- gleichwertige Darstellung von Roh- und Wertungspunkten in den
+  Einzelwettbewerben
 - Saison-Gesamtwertung mit TS-, MS- und Gesamtpunkten
 - Anzeige von Tagessiegen und Rangtrends
 - persönliche Hervorhebung des eigenen Spielers im Browser
