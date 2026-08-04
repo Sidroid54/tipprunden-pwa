@@ -8,7 +8,7 @@
   --red-soft: #fdecee;
 
   --white: #ffffff;
-  --background: #f3f5f8;
+  --background: #e5e9ef;
   --surface: #ffffff;
 
   --text: #172033;
@@ -531,7 +531,6 @@ tbody tr.is-me .player {
   display: grid;
   grid-template-columns:
     42px minmax(0, 1fr) auto;
-  min-height: 98px;
   gap: 11px;
   align-items: center;
   overflow: hidden;
@@ -686,8 +685,15 @@ tbody tr.is-me .player {
 }
 
 .mobile-trend {
-  margin-top: 5px;
-  text-align: right;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+.mobile-trend .trend {
+  min-width: 0;
+  font-size: 0.7rem;
 }
 
 .status {

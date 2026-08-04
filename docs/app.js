@@ -694,6 +694,10 @@ function renderSeasonView() {
               <div class="mobile-player-name">
                 ${result.name}
                 ${getYouBadge(result.name)}
+
+                <span class="mobile-trend">
+                  ${getTrendMarkup(result.trend)}
+                </span>
               </div>
 
               ${modeConfig
@@ -731,10 +735,6 @@ function renderSeasonView() {
                   <span class="mobile-total-label">
                     Punkte
                   </span>
-
-                  <div class="mobile-trend">
-                    ${getTrendMarkup(result.trend)}
-                  </div>
                 </div>
               `
               : `
@@ -744,10 +744,6 @@ function renderSeasonView() {
                   <span class="mobile-total-label">
                     Punkte
                   </span>
-
-                  <div class="mobile-trend">
-                    ${getTrendMarkup(result.trend)}
-                  </div>
                 </div>
               `}
           </article>
