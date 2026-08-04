@@ -531,6 +531,7 @@ tbody tr.is-me .player {
   display: grid;
   grid-template-columns:
     42px minmax(0, 1fr) auto;
+  min-height: 98px;
   gap: 11px;
   align-items: center;
   overflow: hidden;
