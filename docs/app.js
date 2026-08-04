@@ -325,8 +325,8 @@ function calculateSeasonRanking(
     [...totals.values()],
     {
       combined: "totalPoints",
-      tips: "tsPoints",
-      manager: "msPoints"
+      tips: "tsRawPoints",
+      manager: "msRawPoints"
     }[mode]
   );
 }
@@ -875,11 +875,7 @@ function renderMatchdayView() {
         const resultRank =
           modeConfig.rank(result);
 
-        const rankClass =
-          getRankClass(resultRank);
-
         const rowClasses = [
-          getPodiumRowClass(resultRank),
           isSelectedPlayer(result.name)
             ? "is-me"
             : ""
@@ -891,7 +887,7 @@ function renderMatchdayView() {
           <tr class="${rowClasses}">
             <td>
               <span
-                class="rank-badge ${rankClass}"
+                class="rank-badge"
               >
                 ${resultRank}
               </span>
@@ -929,9 +925,6 @@ function renderMatchdayView() {
         const resultRank =
           modeConfig.rank(result);
 
-        const rankClass =
-          getRankClass(resultRank);
-
         const selectedClass =
           isSelectedPlayer(result.name)
             ? "is-me"
@@ -941,12 +934,11 @@ function renderMatchdayView() {
           <article
             class="
               ranking-item
-              place-${resultRank}
               ${selectedClass}
             "
           >
             <span
-              class="rank-badge ${rankClass}"
+              class="rank-badge"
             >
               ${resultRank}
             </span>
