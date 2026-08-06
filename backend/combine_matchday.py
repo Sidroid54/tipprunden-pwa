@@ -6,15 +6,23 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from config import PARTICIPANTS, RANKING_POINTS, validate_matchday
+from config import (
+    CURRENT_SEASON,
+    PARTICIPANTS,
+    RANKING_POINTS,
+    SEASONS,
+    validate_matchday,
+    validate_season,
+    validate_writable_season,
+)
 from file_utils import write_json_atomic
 
 
 BACKEND_DIR = Path(__file__).resolve().parent
 PROJECT_DIR = BACKEND_DIR.parent
 
-INPUT_DIR = BACKEND_DIR / "data"
 DOCS_DIR = PROJECT_DIR / "docs"
+PUBLIC_DATA_DIR = DOCS_DIR / "data"
 
 def load_json(path: Path) -> dict[str, Any]:
     """Lädt eine JSON-Datei und prüft, ob sie existiert."""
@@ -107,13 +115,22 @@ def competition_ranking(
     return sorted_rows
 
 
-def combine_matchday(matchday: int) -> dict[str, Any]:
+def season_input_dir(season: str) -> Path:
+    """Liefert den geschützten Datenordner einer bekannten Saison."""
+    return BACKEND_DIR / "data" / validate_season(season)
+
+
+def combine_matchday(
+    matchday: int,
+    season: str = CURRENT_SEASON,
+) -> dict[str, Any]:
     """Führt Kicktipp- und kicker-Ergebnisse zusammen."""
+    input_dir = season_input_dir(season)
     kicktipp_file = (
-        INPUT_DIR / f"kicktipp_matchday_{matchday:02d}.json"
+        input_dir / f"kicktipp_matchday_{matchday:02d}.json"
     )
     kicker_file = (
-        INPUT_DIR / f"kicker_matchday_{matchday:02d}.json"
+        input_dir / f"kicker_matchday_{matchday:02d}.json"
     )
 
     kicktipp_payload = load_json(kicktipp_file)
@@ -172,6 +189,7 @@ def combine_matchday(matchday: int) -> dict[str, Any]:
     )
 
     return {
+        "season": season,
         "matchday": matchday,
         "generated_at": datetime.now().astimezone().isoformat(),
         "results": ranked_rows,
@@ -236,10 +254,15 @@ def validate_combined_payload(payload: dict[str, Any]) -> None:
 def save_combined_matchday(
     matchday: int,
     payload: dict[str, Any],
+    season: str = CURRENT_SEASON,
 ) -> Path:
     """Speichert die kombinierte Spieltagsdatei im Backend."""
+    validate_writable_season(season)
+    if payload.get("season") != season:
+        raise ValueError("Die kombinierte Wertung gehört zu einer anderen Saison.")
+    input_dir = season_input_dir(season)
     output_file = (
-        INPUT_DIR / f"combined_matchday_{matchday:02d}.json"
+        input_dir / f"combined_matchday_{matchday:02d}.json"
     )
 
     if payload.get("matchday") != matchday:
@@ -256,22 +279,29 @@ def save_combined_matchday(
 
 def update_public_data(
     matchday_payload: dict[str, Any],
+    season: str = CURRENT_SEASON,
 ) -> Path:
     """
-    Aktualisiert docs/data.json.
+    Aktualisiert die öffentliche Datendatei der angegebenen Saison.
 
     Bereits vorhandene Spieltage bleiben erhalten und der aktuelle
     Spieltag wird ergänzt oder ersetzt.
     """
     validate_combined_payload(matchday_payload)
+    validate_writable_season(season)
+    if matchday_payload.get("season") != season:
+        raise ValueError("Die Veröffentlichung gehört zu einer anderen Saison.")
     DOCS_DIR.mkdir(parents=True, exist_ok=True)
-    public_file = DOCS_DIR / "data.json"
+    PUBLIC_DATA_DIR.mkdir(parents=True, exist_ok=True)
+    public_file = PUBLIC_DATA_DIR / f"{season}.json"
 
     if public_file.exists():
         public_payload = load_json(public_file)
     else:
         public_payload = {
             "app": "Tasmania Hackentrick",
+            "season": season,
+            "season_label": SEASONS[season]["label"],
             "participants": PARTICIPANTS,
             "matchdays": [],
         }
@@ -301,6 +331,8 @@ def update_public_data(
         validate_combined_payload(stored_matchday)
 
     public_payload["app"] = "Tasmania Hackentrick"
+    public_payload["season"] = season
+    public_payload["season_label"] = SEASONS[season]["label"]
     public_payload["participants"] = PARTICIPANTS
     public_payload["updated_at"] = (
         datetime.now().astimezone().isoformat()
@@ -308,6 +340,9 @@ def update_public_data(
     public_payload["matchdays"] = remaining_matchdays
 
     write_json_atomic(public_file, public_payload)
+
+    if season == CURRENT_SEASON:
+        write_json_atomic(DOCS_DIR / "data.json", public_payload)
 
     return public_file
 

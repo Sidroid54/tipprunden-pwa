@@ -9,6 +9,7 @@ from typing import TypedDict
 from playwright.sync_api import Locator, sync_playwright
 
 from config import (
+    CURRENT_SEASON,
     KICKER_GROUP_ID as GROUP_ID,
     KICKER_NAMES,
     KICKER_ROUND_PREFIX as ROUND_PREFIX,
@@ -21,7 +22,7 @@ from file_utils import write_json_atomic
 
 BACKEND_DIR = Path(__file__).resolve().parent
 AUTH_FILE = BACKEND_DIR / "secrets" / "kicker-auth.json"
-OUTPUT_DIR = BACKEND_DIR / "data"
+OUTPUT_DIR = BACKEND_DIR / "data" / CURRENT_SEASON
 
 class RawResult(TypedDict):
     name: str
@@ -192,6 +193,7 @@ def save_result(
     payload = {
         "source": "kicker",
         "competition": "managerspiel_interactive",
+        "season": CURRENT_SEASON,
         "season_id": SEASON_ID,
         "matchday": matchday,
         "source_url": source_url,

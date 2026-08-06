@@ -10,8 +10,8 @@ AUTH_FILE = BACKEND_DIR / "secrets" / "kicker-auth.json"
 
 KICKER_URL = (
     "https://www.kicker.de/managerspiel/interactive/"
-    "se-k00012025/group/round/"
-    "rn-k000120250033/"
+    "se-k00012026/group/round/"
+    "rn-k000120260001/"
     "010000000000000000000711"
 )
 

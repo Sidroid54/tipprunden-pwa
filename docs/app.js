@@ -4,7 +4,12 @@ const PLAYER_STORAGE_KEY =
 const footerStatus =
   document.getElementById("footer-status");
 
+const seasonSelect =
+  document.getElementById("season-select");
+
 let appData = null;
+let seasonCatalog = null;
+let activeSeason = null;
 let latestMatchday = null;
 let selectedMatchday = null;
 let selectedSeasonMatchday = null;
@@ -82,6 +87,13 @@ const changePlayerButton =
 seasonTab.addEventListener("click", () => {
   setView("season");
 });
+
+seasonSelect.addEventListener(
+  "change",
+  async event => {
+    await loadSeasonData(event.target.value);
+  }
+);
 
 matchdayTab.addEventListener("click", () => {
   setView("matchday");
@@ -523,7 +535,12 @@ function isSelectedPlayer(name) {
 }
 
 function renderActiveView() {
-  if (!appData || !latestMatchday) {
+  if (!appData) {
+    return;
+  }
+
+  if (!latestMatchday) {
+    renderEmptySeason();
     return;
   }
 
@@ -532,6 +549,36 @@ function renderActiveView() {
   } else {
     renderMatchdayView();
   }
+}
+
+function renderEmptySeason() {
+  matchdayControls.hidden = true;
+  matchdayModeTabs.hidden = true;
+  hero.hidden = true;
+  rankingHeading.hidden = true;
+  desktopRanking.hidden = true;
+  mobileRanking.hidden = true;
+  loading.hidden = false;
+  loading.classList.remove("error");
+  loading.textContent =
+    `Für ${appData.season_label || "diese Saison"} ` +
+    "liegen noch keine Ergebnisse vor.";
+
+  footerStatus.dataset.baseStatus =
+    `${appData.season_label || activeSeason.label} · Saisonstart`;
+  updateConnectionStatus();
+}
+
+function populateSeasonSelect() {
+  seasonSelect.innerHTML = seasonCatalog.seasons
+    .map(season => `
+      <option value="${season.id}">
+        ${season.label}${season.archived ? " · Archiv" : ""}
+      </option>
+    `)
+    .join("");
+
+  seasonSelect.value = activeSeason.id;
 }
 
 function renderSeasonView() {
@@ -994,32 +1041,36 @@ function renderMatchdayView() {
       .join("");
 }
 
-async function loadData() {
+async function loadSeasonData(seasonId) {
   try {
+    activeSeason = seasonCatalog.seasons.find(
+      season => season.id === seasonId
+    );
+
+    if (!activeSeason) {
+      throw new Error("Die ausgewählte Saison ist unbekannt.");
+    }
+
+    seasonSelect.value = activeSeason.id;
+    loading.hidden = false;
+    loading.classList.remove("error");
+    loading.textContent = "Ergebnisse werden geladen …";
+    desktopRanking.hidden = true;
+    mobileRanking.hidden = true;
+
     const response = await fetch(
-      `data.json?timestamp=${Date.now()}`,
-      {
-        cache: "no-store"
-      }
+      `${activeSeason.data_url}?timestamp=${Date.now()}`,
+      { cache: "no-store" }
     );
 
     if (!response.ok) {
       throw new Error(
-        "data.json konnte nicht geladen werden: " +
+        "Saisondaten konnten nicht geladen werden: " +
         response.status
       );
     }
 
     appData = await response.json();
-
-    if (
-      !Array.isArray(appData.matchdays) ||
-      appData.matchdays.length === 0
-    ) {
-      throw new Error(
-        "Es sind noch keine Spieltage gespeichert."
-      );
-    }
 
     if (
       !Array.isArray(appData.participants) ||
@@ -1030,15 +1081,24 @@ async function loadData() {
       );
     }
 
-    latestMatchday =
-      getLatestMatchday(
-        appData.matchdays
-      );
+    if (!Array.isArray(appData.matchdays)) {
+      throw new Error("Die Spieltagsliste ist ungültig.");
+    }
+
+    latestMatchday = appData.matchdays.length
+      ? getLatestMatchday(appData.matchdays)
+      : null;
+
+    if (!latestMatchday) {
+      selectedMatchday = null;
+      selectedSeasonMatchday = null;
+      renderActiveView();
+      changePlayerButton.hidden = true;
+      return;
+    }
 
     if (
-      !Array.isArray(
-        latestMatchday.results
-      ) ||
+      !Array.isArray(latestMatchday.results) ||
       latestMatchday.results.length !== 9
     ) {
       throw new Error(
@@ -1046,22 +1106,16 @@ async function loadData() {
       );
     }
 
-    selectedMatchday =
-      Number(latestMatchday.matchday);
+    selectedMatchday = Number(latestMatchday.matchday);
+    selectedSeasonMatchday = Number(latestMatchday.matchday);
 
-    selectedSeasonMatchday =
-      Number(latestMatchday.matchday);
-
-    const storedPlayer =
-      localStorage.getItem(
-        PLAYER_STORAGE_KEY
-      );
+    const storedPlayer = localStorage.getItem(
+      PLAYER_STORAGE_KEY
+    );
 
     if (
       storedPlayer &&
-      appData.participants.includes(
-        storedPlayer
-      )
+      appData.participants.includes(storedPlayer)
     ) {
       selectedPlayer = storedPlayer;
     }
@@ -1074,11 +1128,11 @@ async function loadData() {
     mobileRanking.hidden = false;
 
     footerStatus.dataset.baseStatus =
+      `${activeSeason.label} · ` +
       `Stand: ${latestMatchday.matchday}. Spieltag` +
       ` · ${formatDateOnly(appData.updated_at)}`;
 
     updateConnectionStatus();
-
     changePlayerButton.hidden = false;
 
     if (!selectedPlayer) {
@@ -1086,9 +1140,44 @@ async function loadData() {
     }
   } catch (error) {
     console.error(error);
-
     loading.classList.add("error");
+    loading.textContent =
+      `Fehler beim Laden: ${error.message}`;
+  }
+}
 
+async function loadData() {
+  try {
+    const response = await fetch(
+      `data/seasons.json?timestamp=${Date.now()}`,
+      { cache: "no-store" }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        "Saisonübersicht konnte nicht geladen werden: " +
+        response.status
+      );
+    }
+
+    seasonCatalog = await response.json();
+
+    if (
+      !Array.isArray(seasonCatalog.seasons) ||
+      seasonCatalog.seasons.length === 0
+    ) {
+      throw new Error("Die Saisonübersicht ist leer.");
+    }
+
+    activeSeason = seasonCatalog.seasons.find(
+      season => season.id === seasonCatalog.current
+    ) || seasonCatalog.seasons[0];
+
+    populateSeasonSelect();
+    await loadSeasonData(activeSeason.id);
+  } catch (error) {
+    console.error(error);
+    loading.classList.add("error");
     loading.textContent =
       `Fehler beim Laden: ${error.message}`;
   }

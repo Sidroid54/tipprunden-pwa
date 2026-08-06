@@ -16,12 +16,14 @@ from combine_matchday import (
     save_combined_matchday,
     update_public_data,
 )
-from config import validate_matchday
+from config import CURRENT_SEASON, validate_matchday
 from file_utils import write_json_atomic
 
 
 BACKEND_DIR = Path(__file__).resolve().parent
-LOG_FILE = BACKEND_DIR / "data" / "batch_import_log.json"
+LOG_FILE = (
+    BACKEND_DIR / "data" / CURRENT_SEASON / "batch_import_log.json"
+)
 DIAGNOSTICS_DIR = BACKEND_DIR / "diagnostics"
 
 
@@ -362,6 +364,9 @@ def main() -> None:
     print(f"Erfolgreich: {successes}")
     print(f"Fehler:      {errors}")
     print(f"Protokoll:   {LOG_FILE}")
+
+    if errors:
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":

@@ -131,6 +131,15 @@ main {
   padding: 18px 12px 42px;
 }
 
+.season-picker {
+  margin-bottom: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--white);
+  box-shadow: var(--shadow);
+}
+
 .tabs {
   position: sticky;
   z-index: 10;
@@ -219,7 +228,8 @@ main {
 }
 
 .matchday-select,
-.season-matchday-select {
+.season-matchday-select,
+.season-select {
   width: 100%;
   min-height: 44px;
   padding: 8px 36px 8px 12px;
@@ -233,7 +243,8 @@ main {
 }
 
 .matchday-select:focus,
-.season-matchday-select:focus {
+.season-matchday-select:focus,
+.season-select:focus {
   border-color: var(--red);
   box-shadow:
     0 0 0 3px rgb(200 29 37 / 13%);
@@ -847,6 +858,21 @@ footer {
 @media (min-width: 720px) {
   main {
     padding-top: 24px;
+  }
+
+  .season-picker {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+  }
+
+  .season-picker label {
+    margin-bottom: 0;
+  }
+
+  .season-picker select {
+    width: min(100%, 280px);
   }
 
   .matchday-controls {

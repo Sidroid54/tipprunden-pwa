@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin · Tasmania Hackentrick</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <main>
+    <header>
+      <p class="eyebrow">Nur lokal auf diesem PC</p>
+      <h1>Spieltag manuell erfassen</h1>
+      <p id="season-label">Saison wird geladen …</p>
+    </header>
+
+    <section class="panel controls">
+      <label for="matchday">Spieltag</label>
+      <select id="matchday" aria-label="Spieltag"></select>
+      <p id="existing-warning" class="warning" hidden></p>
+    </section>
+
+    <form id="entry-form">
+      <section class="panel">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Spieler</th><th>Tippspiel</th><th>Managerspiel</th></tr>
+            </thead>
+            <tbody id="score-rows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="actions">
+        <button id="preview-button" type="submit">Vorschau berechnen</button>
+      </div>
+    </form>
+
+    <section id="preview" class="panel" hidden>
+      <h2>Vorschau</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Rang</th><th>Spieler</th><th>TS</th><th>MS</th><th>Gesamt</th></tr>
+          </thead>
+          <tbody id="preview-rows"></tbody>
+        </table>
+      </div>
+      <label class="publish-option">
+        <input id="publish" type="checkbox">
+        Nach dem Speichern committen und auf origin/main pushen
+      </label>
+      <button id="save-button" class="primary" type="button">
+        Geprüften Spieltag speichern
+      </button>
+    </section>
+
+    <p id="status" role="status"></p>
+  </main>
+  <script src="admin.js"></script>
+</body>
+</html>

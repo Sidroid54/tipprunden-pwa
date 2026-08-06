@@ -64,7 +64,8 @@ tipprunden-pwa/
 ├── docs/
 │   ├── assets/                       Logos und App-Symbole
 │   ├── app.js                        Auswertungs- und Bedienlogik
-│   ├── data.json                     Öffentliche Ranglistendaten
+│   ├── data/                         Saisonübersicht und Ranglistenarchive
+│   ├── data.json                     Daten der aktuellen Saison
 │   ├── index.html                    Semantische HTML-Oberfläche
 │   ├── manifest.json                 PWA-Konfiguration
 │   ├── service-worker.js             PWA-Caching
@@ -74,8 +75,71 @@ tipprunden-pwa/
 
 Das Backend ist kein dauerhaft laufender Webserver. Die Python-Skripte rufen
 die Daten mit Playwright ab und schreiben JSON-Dateien. Das Frontend ist eine
-statische HTML/CSS/JavaScript-Anwendung und liest ausschließlich
-`docs/data.json`.
+statische HTML/CSS/JavaScript-Anwendung und liest die Saisonübersicht sowie
+die saisonbezogenen JSON-Dateien unter `docs/data/`.
+
+## Saisonbetrieb 2026/27
+
+Die aktive Saison ist `2026-27`. Die Daten aus `2025-26` liegen unverändert
+im Archiv und können in der PWA über die Saisonauswahl geöffnet werden.
+
+```text
+backend/data/2025-26/    Quelldaten des Archivs
+backend/data/2026-27/    Quelldaten der aktiven Saison
+docs/data/2025-26.json   Öffentliches Archiv
+docs/data/2026-27.json   Öffentliche aktuelle Saison
+docs/data/seasons.json   Reihenfolge und Status der Saisons
+```
+
+Die Saison 2026/27 verwendet:
+
+```text
+Kicktipp:            5500429
+kicker Saison:       se-k00012026
+kicker Rundenpräfix: rn-k00012026
+kicker Gruppe:       010000000000000000000711
+```
+
+Neue Imports schreiben ausschließlich in die aktive Saison. Archivierte
+Saisons werden weder vom automatischen Import noch von der Admin-Seite
+verändert.
+
+## Lokale Admin-Seite
+
+Wenn der automatische Abruf fehlschlägt, kann ein Spieltag lokal eingegeben
+werden:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File backend/start_admin.ps1
+```
+
+Die Seite öffnet sich unter <http://127.0.0.1:8765/> und ist ausschließlich
+auf diesem PC erreichbar. Sie prüft die Rohpunkte aller neun Teilnehmer,
+berechnet Rang-, TS-, MS- und Gesamtpunkte und zeigt vor dem Speichern eine
+Vorschau. Optional können die erzeugten Daten anschließend committed und auf
+`origin/main` gepusht werden.
+
+## Automatischer Import auf diesem PC
+
+Der automatische Lauf ermittelt den ersten fehlenden Spieltag, startet den
+bereits bewährten sichtbaren Microsoft Edge und veröffentlicht nur nach einem
+vollständigen Import beider Quellen:
+
+```powershell
+backend/.venv/Scripts/python.exe backend/run_scheduled_import.py
+```
+
+Eine wöchentliche Windows-Aufgabe wird beispielsweise so installiert:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File backend/install_scheduled_task.ps1 `
+  -DayOfWeek Monday -At "10:00" -StartDate "2026-08-31"
+```
+
+Der Windows-Benutzer muss angemeldet sein, weil Edge sichtbar gestartet wird.
+Die Aufgabe darf den Rechner aufwecken. Gültige Sitzungsdateien unter
+`backend/secrets/` bleiben Voraussetzung. Bei einem Fehler werden keine Daten
+committed oder gepusht; der nächste Lauf versucht denselben Spieltag erneut.
 
 ## Voraussetzungen
 
@@ -159,9 +223,10 @@ Der Import führt für jeden Spieltag folgende Schritte aus:
 2. Kicktipp-Ergebnisse abrufen und bewerten
 3. beide Quellen auf genau neun Teilnehmer prüfen
 4. Ergebnisse zu einer Spieltagswertung kombinieren
-5. kombinierte Datei unter `backend/data/` speichern
-6. den Spieltag in `docs/data.json` ergänzen oder ersetzen
-7. den Ablauf in `backend/data/batch_import_log.json` protokollieren
+5. kombinierte Datei unter `backend/data/2026-27/` speichern
+6. den Spieltag in `docs/data/2026-27.json` ergänzen oder ersetzen
+7. die Kompatibilitätsdatei `docs/data.json` aktualisieren
+8. den Ablauf im saisonbezogenen Importprotokoll festhalten
 
 Die Dateien werden atomisch geschrieben: Eine bestehende Datei wird erst
 ersetzt, nachdem die neue JSON-Datei vollständig auf den Datenträger
@@ -198,8 +263,9 @@ python -m http.server 8000
 
 Danach ist die App unter <http://localhost:8000> erreichbar.
 
-Die App lädt `data.json` ohne Browser-Cache. Der selbst gewählte Spieler wird
-nur auf dem jeweiligen Gerät im `localStorage` des Browsers gespeichert.
+Die App lädt die Saisonübersicht und ausgewählten Saisondaten ohne Browser-
+Cache. Der selbst gewählte Spieler wird nur auf dem jeweiligen Gerät im
+`localStorage` des Browsers gespeichert.
 
 ## Tests ausführen
 
@@ -239,8 +305,8 @@ Python-Umgebungen niemals eingecheckt werden.
   `backend/config.py`.
 - Das Frontend ist in `docs/index.html`, `docs/styles.css` und `docs/app.js`
   aufgeteilt und benötigt keinen Build-Schritt.
-- Die Dateien in `backend/data/` dienen als nachvollziehbare Quelldaten für
-  die veröffentlichte `docs/data.json`.
+- Die Dateien in `backend/data/<saison>/` dienen als nachvollziehbare
+  Quelldaten für die veröffentlichten saisonbezogenen JSON-Dateien.
 - Der Service Worker speichert die App-Oberfläche und den letzten erfolgreich
   geladenen Datenstand. Ranglistendaten werden online bevorzugt aus dem Netz
   geladen; offline kennzeichnet die App den zwischengespeicherten Stand.

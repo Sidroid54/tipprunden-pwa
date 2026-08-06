@@ -1,0 +1,17 @@
+{
+  "current": "2026-27",
+  "seasons": [
+    {
+      "id": "2026-27",
+      "label": "Saison 2026/27",
+      "archived": false,
+      "data_url": "data/2026-27.json"
+    },
+    {
+      "id": "2025-26",
+      "label": "Saison 2025/26",
+      "archived": true,
+      "data_url": "data/2025-26.json"
+    }
+  ]
+}

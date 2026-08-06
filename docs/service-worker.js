@@ -1,10 +1,13 @@
 const CACHE_PREFIX = "tasmania-hackentrick-";
-const CACHE_NAME = `${CACHE_PREFIX}v14`;
+const CACHE_NAME = `${CACHE_PREFIX}v15`;
 
 const APP_SHELL = [
   "./index.html",
   "./styles.css",
   "./app.js",
+  "./data/seasons.json",
+  "./data/2026-27.json",
+  "./data/2025-26.json",
   "./manifest.json",
   "./assets/logo-tasmania.png",
   "./assets/icon-tasmania-192.png",
@@ -12,7 +15,6 @@ const APP_SHELL = [
 ];
 
 const INDEX_URL = new URL("./index.html", self.registration.scope).href;
-const DATA_URL = new URL("./data.json", self.registration.scope).href;
 
 self.addEventListener("install", event => {
   event.waitUntil(
@@ -40,6 +42,8 @@ self.addEventListener("activate", event => {
 
 async function loadLatestData(request) {
   const cache = await caches.open(CACHE_NAME);
+  const cacheUrl = new URL(request.url);
+  cacheUrl.search = "";
 
   try {
     const response = await fetch(request);
@@ -48,10 +52,10 @@ async function loadLatestData(request) {
       throw new Error(`data.json antwortet mit ${response.status}`);
     }
 
-    await cache.put(DATA_URL, response.clone());
+    await cache.put(cacheUrl.href, response.clone());
     return response;
   } catch (error) {
-    const cachedResponse = await cache.match(DATA_URL);
+    const cachedResponse = await cache.match(cacheUrl.href);
 
     if (cachedResponse) {
       return cachedResponse;
@@ -88,7 +92,10 @@ self.addEventListener("fetch", event => {
     return;
   }
 
-  if (url.pathname.endsWith("/data.json")) {
+  if (
+    url.pathname.endsWith("/data.json") ||
+    url.pathname.includes("/data/")
+  ) {
     event.respondWith(loadLatestData(request));
     return;
   }
