@@ -138,8 +138,10 @@ powershell -ExecutionPolicy Bypass -File backend/install_scheduled_task.ps1 `
 
 Der Windows-Benutzer muss angemeldet sein, weil Edge sichtbar gestartet wird.
 Die Aufgabe darf den Rechner aufwecken. Gültige Sitzungsdateien unter
-`backend/secrets/` bleiben Voraussetzung. Bei einem Fehler werden keine Daten
-committed oder gepusht; der nächste Lauf versucht denselben Spieltag erneut.
+`backend/secrets/` bleiben Voraussetzung. Schlägt der Abruf um 10:00 Uhr fehl,
+wird derselbe Spieltag gegen 11:00 Uhr und letztmalig gegen 12:00 Uhr erneut
+versucht. Sobald ein Versuch erfolgreich ist, endet der Lauf. Bei einem Fehler
+werden keine Daten committed oder gepusht.
 
 ## Voraussetzungen
 
