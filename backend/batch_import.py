@@ -7,7 +7,12 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from playwright.sync_api import BrowserContext, Page, sync_playwright
+from playwright.sync_api import (
+    BrowserContext,
+    Page,
+    TimeoutError as PlaywrightTimeoutError,
+    sync_playwright,
+)
 
 import process_kicker_matchday as kicker
 import process_kicktipp_matchday as kicktipp
@@ -34,10 +39,17 @@ def accept_kicker_consent(page: Page) -> None:
         exact=True,
     )
 
-    if consent_button.count() and consent_button.first.is_visible():
-        print("  kicker: Bestätige Werbung und Tracking …")
-        consent_button.first.click(timeout=10_000)
-        page.wait_for_timeout(1_500)
+    try:
+        consent_button.first.wait_for(
+            state="visible",
+            timeout=10_000,
+        )
+    except PlaywrightTimeoutError:
+        return
+
+    print("  kicker: Bestätige Werbung und Tracking …")
+    consent_button.first.click(timeout=10_000)
+    page.wait_for_timeout(1_500)
 
 
 def import_kicker_matchday(
