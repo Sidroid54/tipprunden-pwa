@@ -1,0 +1,74 @@
+{
+  "source": "kicker",
+  "competition": "managerspiel_interactive",
+  "season": "2026-27",
+  "season_id": "se-k00012026",
+  "matchday": 4,
+  "source_url": "https://www.kicker.de/managerspiel/interactive/se-k00012026/group/round/rn-k000120260004/010000000000000000000711",
+  "retrieved_at": "2026-09-21T21:11:30.551715+02:00",
+  "results": [
+    {
+      "rank": 1,
+      "name": "Marius",
+      "kicker_name": "Luitpold",
+      "raw_points": 76,
+      "ms_points": 10
+    },
+    {
+      "rank": 1,
+      "name": "Kai",
+      "kicker_name": "KAIANO",
+      "raw_points": 76,
+      "ms_points": 10
+    },
+    {
+      "rank": 3,
+      "name": "Daniel",
+      "kicker_name": "Daniel Sinzig",
+      "raw_points": 70,
+      "ms_points": 7
+    },
+    {
+      "rank": 4,
+      "name": "Simon",
+      "kicker_name": "Simon Owald",
+      "raw_points": 58,
+      "ms_points": 6
+    },
+    {
+      "rank": 5,
+      "name": "Björn",
+      "kicker_name": "björn wagner",
+      "raw_points": 53,
+      "ms_points": 5
+    },
+    {
+      "rank": 6,
+      "name": "Jan",
+      "kicker_name": "Jan Horstmann",
+      "raw_points": 52,
+      "ms_points": 4
+    },
+    {
+      "rank": 6,
+      "name": "Tim",
+      "kicker_name": "Tim Roth",
+      "raw_points": 52,
+      "ms_points": 4
+    },
+    {
+      "rank": 8,
+      "name": "Marcus",
+      "kicker_name": "Marcus Vanselow",
+      "raw_points": 44,
+      "ms_points": 2
+    },
+    {
+      "rank": 9,
+      "name": "Alex",
+      "kicker_name": "Alexander Neubauer",
+      "raw_points": 29,
+      "ms_points": 1
+    }
+  ]
+}
