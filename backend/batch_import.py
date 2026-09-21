@@ -27,6 +27,19 @@ LOG_FILE = (
 DIAGNOSTICS_DIR = BACKEND_DIR / "diagnostics"
 
 
+def accept_kicker_consent(page: Page) -> None:
+    """Bestätigt die bereits gewählte Kicker-Nutzung, falls sie erneut fragt."""
+    consent_button = page.get_by_text(
+        "Zustimmen & weiter",
+        exact=True,
+    )
+
+    if consent_button.count() and consent_button.first.is_visible():
+        print("  kicker: Bestätige Werbung und Tracking …")
+        consent_button.first.click(timeout=10_000)
+        page.wait_for_timeout(1_500)
+
+
 def import_kicker_matchday(
     page: Page,
     matchday: int,
@@ -41,6 +54,8 @@ def import_kicker_matchday(
         wait_until="domcontentloaded",
         timeout=60_000,
     )
+
+    accept_kicker_consent(page)
 
     page.wait_for_selector(
         "tr.ranking-item",
