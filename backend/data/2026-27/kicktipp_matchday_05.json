@@ -1,0 +1,74 @@
+{
+  "source": "kicktipp",
+  "competition": "tippspiel",
+  "season": "2026-27",
+  "matchday": 5,
+  "source_url": "manual://2026-27/matchday/5",
+  "retrieved_at": "2026-10-12T12:47:46.500101+02:00",
+  "entry_method": "manual",
+  "results": [
+    {
+      "name": "Marius",
+      "raw_points": 19,
+      "rank": 1,
+      "ts_points": 10,
+      "kicktipp_name": "Marius"
+    },
+    {
+      "name": "Simon",
+      "raw_points": 17,
+      "rank": 2,
+      "ts_points": 8,
+      "kicktipp_name": "Simon"
+    },
+    {
+      "name": "Tim",
+      "raw_points": 15,
+      "rank": 3,
+      "ts_points": 7,
+      "kicktipp_name": "Tim"
+    },
+    {
+      "name": "Kai",
+      "raw_points": 14,
+      "rank": 4,
+      "ts_points": 6,
+      "kicktipp_name": "Kai"
+    },
+    {
+      "name": "Marcus",
+      "raw_points": 13,
+      "rank": 5,
+      "ts_points": 5,
+      "kicktipp_name": "Marcus"
+    },
+    {
+      "name": "Björn",
+      "raw_points": 12,
+      "rank": 6,
+      "ts_points": 4,
+      "kicktipp_name": "Björn"
+    },
+    {
+      "name": "Daniel",
+      "raw_points": 12,
+      "rank": 6,
+      "ts_points": 4,
+      "kicktipp_name": "Daniel"
+    },
+    {
+      "name": "Jan",
+      "raw_points": 10,
+      "rank": 8,
+      "ts_points": 2,
+      "kicktipp_name": "Jan"
+    },
+    {
+      "name": "Alex",
+      "raw_points": 8,
+      "rank": 9,
+      "ts_points": 1,
+      "kicktipp_name": "Alex"
+    }
+  ]
+}

@@ -1,11 +1,16 @@
 {
-  "generated_at": "2026-09-21T21:11:30.582095+02:00",
+  "generated_at": "2026-10-12T12:01:10.010797+02:00",
   "entries": [
     {
-      "matchday": 4,
-      "status": "success",
-      "started_at": "2026-09-21T21:11:23.583062+02:00",
-      "finished_at": "2026-09-21T21:11:30.581928+02:00"
+      "matchday": 5,
+      "status": "error",
+      "started_at": "2026-10-12T12:00:05.107286+02:00",
+      "finished_at": "2026-10-12T12:01:10.010408+02:00",
+      "error": "Page.wait_for_selector: Timeout 60000ms exceeded.\nCall log:\n  - waiting for locator(\"tr.ranking-item\") to be visible\n",
+      "diagnostics": [
+        "C:\\Users\\Simon\\Github\\tipprunden-pwa\\backend\\diagnostics\\matchday-05-kicker-20261012-120109.png",
+        "C:\\Users\\Simon\\Github\\tipprunden-pwa\\backend\\diagnostics\\matchday-05-kicktipp-20261012-120109.png"
+      ]
     }
   ]
 }

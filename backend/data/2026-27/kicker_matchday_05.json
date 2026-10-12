@@ -1,0 +1,74 @@
+{
+  "source": "kicker",
+  "competition": "managerspiel_interactive",
+  "season": "2026-27",
+  "matchday": 5,
+  "source_url": "manual://2026-27/matchday/5",
+  "retrieved_at": "2026-10-12T12:47:46.500101+02:00",
+  "entry_method": "manual",
+  "results": [
+    {
+      "name": "Björn",
+      "raw_points": 67,
+      "rank": 1,
+      "ms_points": 10,
+      "kicker_name": "Björn"
+    },
+    {
+      "name": "Daniel",
+      "raw_points": 67,
+      "rank": 1,
+      "ms_points": 10,
+      "kicker_name": "Daniel"
+    },
+    {
+      "name": "Marcus",
+      "raw_points": 66,
+      "rank": 3,
+      "ms_points": 7,
+      "kicker_name": "Marcus"
+    },
+    {
+      "name": "Kai",
+      "raw_points": 65,
+      "rank": 4,
+      "ms_points": 6,
+      "kicker_name": "Kai"
+    },
+    {
+      "name": "Alex",
+      "raw_points": 63,
+      "rank": 5,
+      "ms_points": 5,
+      "kicker_name": "Alex"
+    },
+    {
+      "name": "Tim",
+      "raw_points": 60,
+      "rank": 6,
+      "ms_points": 4,
+      "kicker_name": "Tim"
+    },
+    {
+      "name": "Simon",
+      "raw_points": 53,
+      "rank": 7,
+      "ms_points": 3,
+      "kicker_name": "Simon"
+    },
+    {
+      "name": "Marius",
+      "raw_points": 45,
+      "rank": 8,
+      "ms_points": 2,
+      "kicker_name": "Marius"
+    },
+    {
+      "name": "Jan",
+      "raw_points": 40,
+      "rank": 9,
+      "ms_points": 1,
+      "kicker_name": "Jan"
+    }
+  ]
+}
