@@ -51,6 +51,19 @@ const matchdayModeButtons =
 const seasonMatchdaySelect =
   document.getElementById("season-matchday-select");
 
+const matchdayPickers = [
+  {
+    select: matchdaySelect,
+    previous: document.getElementById("matchday-previous"),
+    next: document.getElementById("matchday-next")
+  },
+  {
+    select: seasonMatchdaySelect,
+    previous: document.getElementById("season-matchday-previous"),
+    next: document.getElementById("season-matchday-next")
+  }
+];
+
 const seasonControls =
   document.getElementById("season-controls");
 
@@ -83,6 +96,105 @@ const cancelPlayerButton =
 
 const changePlayerButton =
   document.getElementById("change-player-button");
+
+const rankingView =
+  document.getElementById("ranking-view");
+
+const jubileeOverview =
+  document.getElementById("jubilee-overview");
+
+const jubileeWelcome = document.getElementById("jubilee-welcome");
+const jubileeWelcomeKey = "tasmania-hackentrick-jubilee-welcome-seen";
+let jubileeWelcomeSeen = false;
+
+const jubileeMilestones =
+  document.getElementById("jubilee-milestones");
+
+const openJubileeButton =
+  document.getElementById("open-jubilee-button");
+
+const openMilestonesButton =
+  document.getElementById("open-milestones-button");
+
+const footer = document.querySelector("footer");
+
+const appHeader =
+  document.getElementById("app-header");
+
+const jubileeHeader =
+  document.getElementById("jubilee-header");
+
+function setAppArea(area, recordHistory = true) {
+  if (!["ranking", "overview", "milestones", "archive", "fame", "album"].includes(area)) area = "ranking";
+  const isRanking = area === "ranking";
+
+  document.body.classList.toggle("jubilee-theme", !isRanking);
+  document.querySelector('meta[name="theme-color"]').setAttribute(
+    "content", isRanking ? "#ffffff" : "#0b1f3a"
+  );
+
+  rankingView.hidden = !isRanking;
+  jubileeOverview.hidden = area !== "overview";
+  if (jubileeOverview.hidden && jubileeWelcome.open) jubileeWelcome.close();
+  jubileeMilestones.hidden = area !== "milestones";
+  document.getElementById("jubilee-archive").hidden = area !== "archive";
+  document.getElementById("jubilee-fame").hidden = area !== "fame";
+  document.getElementById("jubilee-album").hidden = area !== "album";
+  jubileeHeader.classList.toggle("jubilee-app-header--compact", ["archive", "fame", "album"].includes(area));
+  footer.hidden = !isRanking;
+  appHeader.hidden = !isRanking;
+  jubileeHeader.hidden = isRanking;
+
+  if (isRanking) {
+    changePlayerButton.hidden = !appData;
+  }
+
+  if (recordHistory && history.state?.appArea !== area) {
+    history.pushState({ appArea: area, fromArea: history.state?.appArea }, "", `#${area}`);
+  }
+  window.scrollTo({ top: 0, behavior: "instant" });
+}
+
+window.addEventListener("popstate", () => setAppArea(history.state?.appArea || "ranking", false));
+history.replaceState({ appArea: "ranking" }, "");
+
+openJubileeButton.addEventListener("click", () => {
+  setAppArea("overview");
+  if (jubileeWelcomeSeen || typeof jubileeWelcome.showModal !== "function") return;
+  try {
+    jubileeWelcomeSeen = localStorage.getItem(jubileeWelcomeKey) === "1";
+  } catch {
+    // If browser storage is unavailable, remember the welcome for this visit.
+  }
+  if (jubileeWelcomeSeen) return;
+
+  jubileeWelcome.showModal();
+  jubileeWelcomeSeen = true;
+  try {
+    localStorage.setItem(jubileeWelcomeKey, "1");
+  } catch {
+    // The archive remains available even when storage is blocked.
+  }
+});
+
+jubileeWelcome.addEventListener("close", () => {
+  if (!jubileeOverview.hidden) openMilestonesButton.focus({ preventScroll: true });
+});
+
+openMilestonesButton.addEventListener("click", () => {
+  setAppArea("milestones");
+});
+
+for (const button of document.querySelectorAll("[data-open-album]")) {
+  button.addEventListener("click", () => setAppArea("album"));
+}
+
+for (const button of document.querySelectorAll("[data-jubilee-back]")) {
+  button.addEventListener("click", () => {
+    if (history.state?.fromArea === button.dataset.jubileeBack) history.back();
+    else setAppArea(button.dataset.jubileeBack);
+  });
+}
 
 seasonTab.addEventListener("click", () => {
   setView("season");
@@ -135,6 +247,15 @@ seasonMatchdaySelect.addEventListener(
   }
 );
 
+for (const picker of matchdayPickers) {
+  picker.previous.addEventListener("click", () => {
+    stepMatchday(picker.select, -1);
+  });
+  picker.next.addEventListener("click", () => {
+    stepMatchday(picker.select, 1);
+  });
+}
+
 savePlayerButton.addEventListener(
   "click",
   () => {
@@ -153,6 +274,7 @@ savePlayerButton.addEventListener(
 
     closePlayerDialog();
     renderActiveView();
+    window.dispatchEvent(new Event("tasmania-player-change"));
   }
 );
 
@@ -188,6 +310,28 @@ function getSortedMatchdayNumbers() {
   return appData.matchdays
     .map(item => Number(item.matchday))
     .sort((a, b) => a - b);
+}
+
+function updateMatchdayNavigation() {
+  const numbers = appData ? getSortedMatchdayNumbers() : [];
+
+  for (const picker of matchdayPickers) {
+    const index = numbers.indexOf(Number(picker.select.value));
+    picker.previous.disabled = index <= 0;
+    picker.next.disabled = index < 0 || index >= numbers.length - 1;
+  }
+}
+
+function stepMatchday(select, direction) {
+  if (!appData) return;
+
+  const numbers = getSortedMatchdayNumbers();
+  const index = numbers.indexOf(Number(select.value));
+  const nextIndex = index + direction;
+  if (index < 0 || nextIndex < 0 || nextIndex >= numbers.length) return;
+
+  select.value = String(numbers[nextIndex]);
+  select.dispatchEvent(new Event("change"));
 }
 
 function getLatestMatchday(matchdays) {
@@ -431,6 +575,8 @@ function populateMatchdaySelect() {
 
   seasonMatchdaySelect.value =
     String(selectedSeasonMatchday);
+
+  updateMatchdayNavigation();
 }
 
 function populatePlayerSelect() {
@@ -552,6 +698,7 @@ function renderActiveView() {
 }
 
 function renderEmptySeason() {
+  updateMatchdayNavigation();
   matchdayControls.hidden = true;
   matchdayModeTabs.hidden = true;
   hero.hidden = true;
@@ -591,6 +738,8 @@ function renderSeasonView() {
 
   seasonMatchdaySelect.value =
     String(selectedSeasonMatchday);
+
+  updateMatchdayNavigation();
 
   const ranking =
     getSeasonRankingWithTrend(
@@ -820,6 +969,8 @@ function renderMatchdayView() {
 
   matchdaySelect.value =
     String(matchday.matchday);
+
+  updateMatchdayNavigation();
 
   const modeConfig = {
     combined: {

@@ -61,7 +61,7 @@ button {
   display: none !important;
 }
 
-header {
+body > header {
   position: relative;
   overflow: hidden;
   padding: 17px 16px 19px;
@@ -75,7 +75,7 @@ header {
   color: var(--navy);
 }
 
-header::after {
+body > header::after {
   content: "";
   position: absolute;
   right: -95px;
@@ -114,14 +114,14 @@ main {
     );
 }
 
-header h1 {
+body > header h1 {
   margin: 0;
   color: var(--navy);
   font-size: clamp(1.65rem, 7vw, 2.7rem);
   line-height: 1.05;
 }
 
-header p {
+body > header p {
   margin: 7px 0 0;
   color: var(--muted);
   font-size: 0.94rem;
@@ -131,13 +131,484 @@ main {
   padding: 18px 12px 42px;
 }
 
-.season-picker {
-  margin-bottom: 12px;
-  padding: 12px 14px;
+.jubilee-entry {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 14px;
+  padding: 12px 14px 12px 10px;
+  border: 1px solid rgb(199 146 30 / 55%);
+  border-radius: 16px;
+  background:
+    linear-gradient(120deg, #11181f, var(--navy-light));
+  color: var(--white);
+  box-shadow: var(--shadow);
+  text-align: left;
+}
+
+.jubilee-entry-number {
+  min-width: 54px;
+  color: var(--gold);
+  font-size: 2.6rem;
+  font-weight: 900;
+  letter-spacing: -0.08em;
+  line-height: 1;
+}
+
+.jubilee-entry-copy {
+  display: grid;
+  gap: 3px;
+}
+
+.jubilee-entry-copy span,
+.jubilee-feature-kicker,
+.milestones-hero p,
+.jubilee-next-step p {
+  color: var(--gold);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.jubilee-entry-copy strong {
+  font-size: 1.05rem;
+}
+
+.jubilee-entry-arrow {
+  margin-left: 10px;
+  color: var(--gold);
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.jubilee-page {
+  display: grid;
+  gap: 16px;
+}
+
+body.jubilee-theme {
+  --navy: #0b1f3a;
+  --navy-light: #17365f;
+  --navy-soft: #e9eef5;
+  --red: #c81d25;
+  --red-dark: #98151b;
+  --red-soft: #fdecee;
+  --gold: #80621b;
+  --gold-soft: #fcf5dd;
+  --jubilee-dark: #0b1f3a;
+  --jubilee-gold-bright: #e8c96a;
+  --text: #172033;
+  --muted: #656b73;
+  --border: #dfe2e6;
+  --background: #f5f6f7;
+  --shadow: 0 8px 24px rgb(11 31 58 / 7%);
+  min-height: 100dvh;
+}
+
+.jubilee-back-button {
+  justify-self: start;
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--navy);
+  font-weight: 800;
+}
+
+.jubilee-back-button span {
+  margin-right: 5px;
+  color: var(--red);
+  font-size: 1.45rem;
+  line-height: 0;
+  vertical-align: -0.1em;
+}
+
+.milestones-hero {
+  padding: 20px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #11181f, var(--navy-light));
+  color: var(--white);
+  box-shadow: var(--shadow);
+}
+
+.milestones-hero h2 {
+  margin: 4px 0 7px;
+  font-size: clamp(1.55rem, 7vw, 2.15rem);
+  line-height: 1;
+}
+
+.milestones-hero p,
+.jubilee-next-step p {
+  margin: 0;
+}
+
+.milestones-hero span {
+  color: rgb(255 255 255 / 80%);
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+
+.jubilee-app-header {
+  padding: 24px 16px 22px;
+  border-bottom: 2px solid #cfb14f;
+  background: radial-gradient(ellipse at 50% 25%, var(--navy-light), var(--navy) 70%);
+  color: #ffffff;
+}
+
+.jubilee-app-header::after {
+  display: none;
+}
+
+.jubilee-app-header .brand-line {
+  flex-direction: column;
+  gap: 12px;
+  text-align: center;
+}
+
+.jubilee-app-header .brand-logo {
+  width: 150px;
+  height: 150px;
+  border-radius: 0;
+  filter: drop-shadow(0 5px 12px rgb(0 0 0 / 35%));
+}
+
+.jubilee-app-header h1 {
+  margin-top: 7px;
+  color: #ffffff;
+  font-size: 1.6rem;
+  letter-spacing: -0.02em;
+}
+
+.jubilee-app-header p {
+  margin: 0;
+  color: var(--jubilee-gold-bright);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.jubilee-app-header span {
+  display: block;
+  margin-top: 6px;
+  color: #cbd5e3;
+  font-size: 0.85rem;
+}
+
+.jubilee-welcome {
+  width: min(440px, calc(100% - 32px));
+  max-height: calc(100% - 32px);
+  padding: 24px;
+  border: 1px solid var(--jubilee-gold-bright);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.jubilee-welcome::backdrop {
+  background: rgb(11 31 58 / 68%);
+}
+
+.jubilee-welcome h2 {
+  margin: 0 0 6px;
+  color: var(--navy);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.35rem;
+}
+
+.jubilee-welcome p {
+  max-width: 68ch;
+  margin: 0;
+  color: var(--muted);
+  font-size: .95rem;
+  line-height: 1.5;
+}
+
+.jubilee-welcome .dialog-button {
+  min-height: 44px;
+  background: var(--navy);
+  color: var(--white);
+}
+
+.jubilee-feature-list {
+  display: grid;
+  grid-auto-rows: 1fr;
+  gap: 12px;
+}
+
+.jubilee-feature {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  gap: 7px;
+  width: 100%;
+  min-height: 220px;
+  overflow: hidden;
+  padding: 22px 22px 54px;
+  border: 1px solid #bda04d;
+  border-radius: 18px;
+  background: linear-gradient(115deg, var(--navy), var(--navy-light));
+  color: #ffffff;
+  box-shadow: var(--shadow);
+  text-align: left;
+}
+
+.jubilee-feature strong,
+.jubilee-album-entry strong {
+  color: inherit;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.jubilee-feature .jubilee-feature-kicker {
+  color: var(--jubilee-gold-bright);
+}
+
+.jubilee-feature-description {
+  max-width: 32ch;
+  color: #d3deed;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.jubilee-feature-action {
+  margin-top: 5px;
+  color: var(--jubilee-gold-bright);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.jubilee-feature i {
+  position: absolute;
+  bottom: 13px;
+  right: 16px;
+  color: var(--jubilee-gold-bright);
+  font-size: 2rem;
+  font-style: normal;
+}
+
+.jubilee-feature-timeline {
+  position: absolute;
+  bottom: 23px;
+  left: 22px;
+  display: flex;
+  justify-content: space-between;
+  width: 110px;
+  height: 1px;
+  background: #bda04d;
+}
+
+.jubilee-feature-timeline b {
+  width: 7px;
+  height: 7px;
+  margin-top: -3px;
+  border: 1px solid var(--jubilee-gold-bright);
+  border-radius: 50%;
+  background: var(--navy);
+}
+
+.jubilee-feature:focus-visible,
+.jubilee-album-entry:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 3px;
+}
+
+@media (hover: hover) {
+  .jubilee-feature:hover { border-color: var(--gold); box-shadow: 0 6px 22px rgb(11 31 58 / 12%); }
+}
+
+.milestones-hero {
+  padding: 18px;
+}
+
+.milestone-list {
+  position: relative;
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0 0 0 28px;
+  list-style: none;
+}
+
+.milestone-list::before {
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  left: 7px;
+  width: 2px;
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--border) 0 5px,
+    transparent 5px 11px
+  );
+  content: "";
+}
+
+.milestone-list li {
+  position: relative;
+  padding: 0 0 38px;
+}
+
+.milestone-photo { margin: 18px 0 0; }
+.milestone-photo img { display: block; width: 100%; height: auto; border-radius: 12px; }
+.milestone-photo figcaption { margin-top: 7px; font-size: .85rem; color: #526072; line-height: 1.4; }
+.milestone-photo--forum { max-width: 720px; }
+.milestone-photo--forum a { display: block; border-radius: 12px; }
+.milestone-photo--forum a:focus-visible { outline: 3px solid var(--gold); outline-offset: 4px; }
+.milestone-photo--portrait,
+.milestone-photo--patrick { max-width: 360px; }
+.milestone-photo--patrick img { filter: grayscale(1); }
+.milestone-photo--crest img { width: 160px; height: 160px; object-fit: contain; }
+.jubilee-album-entry {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) 16px;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  margin-top: 20px;
+  padding: 12px;
   border: 1px solid var(--border);
   border-radius: 14px;
-  background: var(--white);
-  box-shadow: var(--shadow);
+  background: #ffffff;
+  color: var(--navy);
+  text-align: left;
+}
+.jubilee-album-entry img { width: 72px; height: 60px; object-fit: cover; border-radius: 8px; }
+.jubilee-album-entry strong { display: block; margin-bottom: 4px; }
+.jubilee-album-entry span span { display: block; color: var(--muted); font-size: .9rem; line-height: 1.5; }
+.jubilee-album-arrow { color: var(--gold); font-size: 1.8rem; }
+@media (max-width: 359px) {
+  .jubilee-album-entry { grid-template-columns: minmax(0, 1fr) 16px; gap: 8px; }
+  .jubilee-album-entry img { display: none; }
+}
+.milestone-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 24px; align-items: start; }
+.milestone-gallery .milestone-photo { margin: 0; }
+.milestone-gallery--inline { margin-top: 18px; }
+
+.milestone-list li::before {
+  position: absolute;
+  top: 4px;
+  left: -28px;
+  width: 15px;
+  height: 15px;
+  border: 3px solid var(--background);
+  border-radius: 50%;
+  background: var(--red);
+  box-shadow: 0 0 0 1px rgb(200 29 37 / 30%);
+  content: "";
+}
+
+.milestone-list p {
+  margin: 0;
+  color: var(--gold);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.milestone-list h3 {
+  margin: 5px 0 6px;
+  color: var(--navy);
+  font-size: 1.05rem;
+}
+
+.milestone-list span {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.jubilee-next-step {
+  display: grid;
+  gap: 5px;
+  padding: 16px;
+  border: 1px solid rgb(199 146 30 / 40%);
+  border-radius: 14px;
+  background: var(--gold-soft);
+  color: var(--navy);
+}
+
+.fame-period { margin: 0; color: #526072; font-size: .9rem; }
+.fame-modes { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 0 10px 14px; }
+.fame-modes button { min-height: 44px; padding: 8px; border: 1px solid var(--border); border-radius: 9px; background: white; color: var(--navy); font-weight: 700; }
+.fame-modes button[aria-pressed="true"] { background: var(--navy); color: white; }
+.fame-note { padding: 0 12px 12px; font-size: .8rem; line-height: 1.5; color: #526072; }
+.fame-titles { min-width: 0; table-layout: fixed; }
+.fame-titles th, .fame-titles td { padding: 12px 4px; white-space: normal; overflow-wrap: anywhere; text-align: center; }
+.fame-titles th:first-child, .fame-titles td:first-child { width: 36%; padding-left: 10px; text-align: left; }
+.fame-titles th { text-transform: none; letter-spacing: normal; }
+.fame-titles th button { width: 100%; min-height: 44px; border: 0; padding: 3px 0; font-size: .76rem; font-weight: 700; color: var(--navy); background: transparent; }
+.fame-titles th[aria-sort="descending"] { background: var(--gold-soft); }
+.fame-titles td:not(:first-child) { font-variant-numeric: tabular-nums; }
+.fame-titles .archive-is-me { background: var(--navy-soft); }
+.fame-records { display: grid; gap: 12px; margin-top: 14px; }
+.fame-record { padding: 18px; border-radius: 16px; background: white; border: 1px solid var(--border); }
+.fame-record h4 { margin: 0 0 10px; font-size: .9rem; color: #526072; }
+.fame-record > strong { color: var(--navy); font-size: 1.2rem; }
+.fame-record p { line-height: 1.5; font-size: .9rem; }
+.fame-record summary { cursor: pointer; padding: 12px 0; color: var(--navy); font-size: .85rem; }
+.archive-title { margin: 0; color: var(--navy); font-size: 1.4rem; }
+.archive-picker { display: grid; grid-template-columns: 46px minmax(0, 1fr) 46px; gap: 10px; align-items: end; }
+.archive-picker label { display: block; margin-bottom: 6px; color: var(--muted); font-size: .85rem; }
+.archive-picker select, .archive-picker button, .matchday-picker select, .matchday-picker button { min-height: 48px; border: 1px solid var(--border); border-radius: 12px; background: var(--white); color: var(--navy); }
+.archive-picker select { width: 100%; padding: 8px 12px; font-size: 1.1rem; font-weight: 800; }
+.archive-picker button, .matchday-picker button { font-size: 1.8rem; }
+.archive-picker button:disabled, .matchday-picker button:disabled { opacity: .35; cursor: default; }
+.archive-winners { padding: 18px; border-radius: 16px; background: var(--navy); color: white; }
+.archive-winners h3 { margin: 0 0 14px; font-size: 1rem; color: #e8c779; }
+.archive-winners dl { display: grid; gap: 12px; margin: 0; }
+.archive-winners dl > div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 12px; }
+.archive-winners dt { color: #ccd5e1; font-size: .9rem; }
+.archive-winners dd { margin: 0; font-weight: 800; overflow-wrap: anywhere; }
+.archive-modes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; background: white; border-radius: 12px; }
+.archive-modes button { min-height: 44px; padding: 8px 4px; border: 0; border-radius: 9px; background: transparent; color: var(--navy); font-weight: 700; }
+.archive-modes button[aria-pressed="true"] { background: var(--navy); color: white; }
+.archive-results { min-width: 0; background: white; border-radius: 16px; border: 1px solid var(--border); }
+.archive-results h3 { margin: 0; padding: 16px 12px; color: var(--navy); font-size: 1rem; }
+.archive-results > p { padding: 0 14px 14px; line-height: 1.5; }
+.archive-table { min-width: 0; width: 100%; table-layout: fixed; }
+.archive-table th, .archive-table td { padding: 12px 8px; white-space: normal; }
+.archive-table th:first-child { width: 60px; }
+.archive-table th:last-child { width: 76px; }
+.archive-table td:last-child, .archive-table th:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+.archive-table td:last-child { font-weight: 800; color: var(--navy); }
+.archive-table td:nth-child(2) { overflow-wrap: anywhere; }
+.archive-table .rank-badge { min-width: 32px; width: 32px; height: 32px; }
+.archive-table .archive-is-me, .archive-table .archive-is-me:hover { background: var(--navy-soft); }
+.archive-row-note { display: block; margin-top: 5px; font-size: .78rem; color: #526072; }
+.archive-review { margin-top: 8px; font-size: .8rem; text-align: left; }
+.archive-review summary { color: #805a0e; cursor: pointer; padding: 8px 0; }
+.archive-review p { margin: 6px 0; line-height: 1.45; }
+.archive-explanation { color: #526072; font-size: .88rem; line-height: 1.5; }
+.archive-explanation summary { padding: 12px 0; cursor: pointer; color: var(--navy); font-weight: 700; }
+.archive-explanation p { margin: 4px 0 12px; }
+body > .jubilee-app-header--compact { padding-top: 12px; padding-bottom: 12px; }
+.jubilee-app-header--compact .brand-line { flex-direction: row; gap: 14px; text-align: left; }
+.jubilee-app-header--compact .brand-logo { width: 76px; height: 76px; }
+.jubilee-app-header--compact h1 { margin-top: 0; font-size: 1.3rem; }
+.jubilee-app-header--compact .brand-line > div > p,
+.jubilee-app-header--compact .brand-line > div > span { display: none; }
+
+.jubilee-theme .milestones-hero { background: var(--jubilee-dark); }
+.jubilee-theme .milestones-hero p { color: var(--jubilee-gold-bright); }
+.jubilee-theme .milestones-hero h2 { font-family: Georgia, "Times New Roman", serif; font-weight: 700; }
+.jubilee-theme .milestone-list li::before { box-shadow: 0 0 0 1px rgb(200 29 37 / 30%); }
+.jubilee-theme .fame-note,
+.jubilee-theme .fame-period,
+.jubilee-theme .fame-record h4,
+.jubilee-theme .milestone-photo figcaption,
+.jubilee-theme .archive-row-note,
+.jubilee-theme .archive-explanation { color: var(--muted); }
+.jubilee-theme .archive-winners dt { color: #d3deed; }
+
+@media (min-width: 820px) {
+  .jubilee-feature-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
 .tabs {
@@ -180,6 +651,20 @@ main {
   border-radius: 16px;
   background: var(--white);
   box-shadow: var(--shadow);
+}
+
+.matchday-picker {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr) 46px;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+  align-items: center;
+}
+
+.matchday-picker button:focus-visible {
+  outline: 3px solid rgb(200 29 37 / 25%);
+  outline-offset: 2px;
 }
 
 .matchday-mode-tabs {
@@ -860,21 +1345,6 @@ footer {
     padding-top: 24px;
   }
 
-  .season-picker {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 18px;
-  }
-
-  .season-picker label {
-    margin-bottom: 0;
-  }
-
-  .season-picker select {
-    width: min(100%, 280px);
-  }
-
   .matchday-controls {
     display: flex;
     align-items: center;
@@ -896,5 +1366,14 @@ footer {
 
   .selection-control select {
     width: min(100%, 280px);
+  }
+
+  .matchday-picker {
+    width: min(100%, 392px);
+  }
+
+  .matchday-picker select {
+    width: 100%;
+    min-width: 0;
   }
 }

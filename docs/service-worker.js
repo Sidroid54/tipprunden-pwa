@@ -1,10 +1,14 @@
 const CACHE_PREFIX = "tasmania-hackentrick-";
-const CACHE_NAME = `${CACHE_PREFIX}v15`;
+const CACHE_NAME = `${CACHE_PREFIX}v45`;
 
 const APP_SHELL = [
   "./index.html",
-  "./styles.css",
-  "./app.js",
+  "./styles.css?v=45",
+  "./app.js?v=45",
+  "./archive.js",
+  "./hall-of-fame.js",
+  "./archive-data.js",
+  "./assets/logo-tasmania-25-gold-navy-transparent.png",
   "./data/seasons.json",
   "./data/2026-27.json",
   "./data/2025-26.json",
